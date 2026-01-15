@@ -40,8 +40,9 @@ class RegisteredUserController extends Controller
             'required_hours' => ['required', 'integer', 'min:1', 'max:2000'],
         ]);
 
-        // Check if email was verified
+        // Check if email was verified (auto-verify in production to avoid SMTP issues)
         $emailVerified = \Cache::get('email_verified_' . $request->email);
+        $isProduction = config('app.env') === 'production';
         
         $user = User::create([
             'name' => $request->name,
@@ -50,7 +51,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'school' => $request->school,
             'required_hours' => $request->required_hours,
-            'email_verified_at' => $emailVerified ? now() : null,
+            'email_verified_at' => ($emailVerified || $isProduction) ? now() : null,
         ]);
         
         // Clear the verification cache
