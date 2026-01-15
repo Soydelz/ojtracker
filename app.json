@@ -1,0 +1,10 @@
+{
+  "name": "OJTracker",
+  "description": "OJT Management System",
+  "keywords": ["laravel", "php"],
+  "buildpacks": [
+    {
+      "url": "heroku/php"
+    }
+  ]
+}
