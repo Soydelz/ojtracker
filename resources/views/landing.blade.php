@@ -915,15 +915,13 @@
                 // Validate email
                 const email = document.getElementById('register_email').value.trim();
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                const emailVerified = document.getElementById('register_email').dataset.verified === 'true';
+                // Skip verification check in production (auto-verified on backend)
+                const emailVerified = true; // Always true - backend handles verification
                 if (!email) {
                     showError('register_email', 'Email is required');
                     isValid = false;
                 } else if (!emailRegex.test(email)) {
                     showError('register_email', 'Please enter a valid email address');
-                    isValid = false;
-                } else if (!emailVerified) {
-                    showError('register_email', 'Please verify your email address first');
                     isValid = false;
                 }
 
