@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('/profile/upload-picture', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload-picture');
     Route::post('/profile/upload-cover', [ProfileController::class, 'uploadCoverPhoto'])->name('profile.upload-cover');
+    Route::post('/profile/register-face', [ProfileController::class, 'registerFace'])->name('profile.register-face');
 });
 
 // Notification Routes

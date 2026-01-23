@@ -3,6 +3,12 @@
 @section('title', 'Profile')
 @section('page-title', 'Profile')
 
+@push('scripts')
+<!-- Face-API.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+<script defer src="{{ asset('js/profile-face-registration.js') }}"></script>
+@endpush
+
 @section('content')
 <div class="space-y-6">
     <!-- Success/Warning Messages -->
@@ -217,6 +223,46 @@
                     </div>
                 </div>
 
+                <!-- Face Registration Section (For users without registered face) -->
+                @if(!$user->face_descriptor)
+                <div class="mb-6 bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-6">
+                    <div class="flex items-start space-x-3 mb-4">
+                        <div class="flex-shrink-0">
+                            <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900 mb-1">⚠️ Face Recognition Required</h3>
+                            <p class="text-sm text-gray-700 mb-3">
+                                You need to register your face for DTR Time In/Out attendance. This is required to use the attendance system.
+                            </p>
+                            
+                            <div id="face_registration_status" class="hidden mb-3">
+                                <div class="flex items-center space-x-2 text-green-700 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="font-medium">Face captured successfully! Click "Save Changes" to register.</span>
+                                </div>
+                            </div>
+                            
+                            <button type="button" onclick="openProfileFaceCapture()" 
+                                    class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold rounded-lg hover:from-yellow-600 hover:to-orange-600 transition shadow-lg">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                Register Face Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Hidden input for face descriptor -->
+                <input type="hidden" name="face_descriptor" id="profile_face_descriptor" value="{{ $user->face_descriptor }}">
+
                 <!-- Action Buttons -->
                 <div class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200">
                     <button type="button" onclick="window.location.reload()" 
@@ -294,11 +340,248 @@
     </div>
 </div>
 
+<!-- Face Registration Modal -->
+<div id="faceRegistrationModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4 rounded-t-2xl flex items-center justify-between">
+            <h3 class="text-xl font-bold flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Register Your Face
+            </h3>
+            <button onclick="closeFaceRegistration()" class="text-white hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+            <!-- Instructions -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 class="font-semibold text-blue-900 mb-2">📋 Instructions:</h4>
+                <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                    <li>Position your face in the center of the camera</li>
+                    <li>Ensure good lighting (not too dark or bright)</li>
+                    <li>Look directly at the camera with a neutral expression</li>
+                    <li>Remove sunglasses or anything covering your face</li>
+                    <li>Wait for the system to detect your face</li>
+                </ul>
+            </div>
+
+            <!-- Camera Container -->
+            <div class="relative">
+                <video id="faceVideo" class="w-full rounded-lg border-4 border-gray-300" autoplay muted playsinline style="max-height: 400px;"></video>
+                <canvas id="faceCanvas" class="hidden"></canvas>
+                
+                <!-- Face Detection Overlay -->
+                <div id="faceDetectionOverlay" class="hidden absolute inset-0 flex items-center justify-center">
+                    <div class="bg-green-500 bg-opacity-75 rounded-lg p-4 text-white font-bold">
+                        ✓ Face Detected!
+                    </div>
+                </div>
+
+                <!-- Loading Overlay -->
+                <div id="loadingOverlay" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                    <div class="text-center text-white">
+                        <svg class="animate-spin h-12 w-12 mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p id="loadingText">Loading face detection models...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="faceStatus" class="text-center text-sm"></div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end space-x-4">
+                <button type="button" onclick="closeFaceRegistration()" 
+                        class="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition">
+                    Cancel
+                </button>
+                <button type="button" id="captureFaceBtn" onclick="captureFace()" disabled
+                        class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                    Capture & Register
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load Face-API.js -->
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
 <script>
+    let faceStream = null;
+    let faceModelsLoaded = false;
+    let detectedFaceDescriptor = null;
+
     function calculateRequiredDays() {
         const hours = parseFloat(document.getElementById('required_hours').value) || 590;
         const days = Math.ceil(hours / 7.867); // 7.867 = 590/75
         document.getElementById('required_days').textContent = days;
+    }
+
+    async function openFaceRegistration() {
+        document.getElementById('faceRegistrationModal').classList.remove('hidden');
+        document.getElementById('loadingOverlay').classList.remove('hidden');
+        document.getElementById('captureFaceBtn').disabled = true;
+        
+        try {
+            // Load face-api.js models if not already loaded
+            if (!faceModelsLoaded) {
+                document.getElementById('loadingText').textContent = 'Loading face detection models...';
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model'),
+                    faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model'),
+                    faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model')
+                ]);
+                faceModelsLoaded = true;
+            }
+
+            // Start camera
+            document.getElementById('loadingText').textContent = 'Starting camera...';
+            faceStream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'user',
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                } 
+            });
+            
+            const video = document.getElementById('faceVideo');
+            video.srcObject = faceStream;
+            
+            await video.play();
+            
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            
+            // Start face detection loop
+            detectFace();
+            
+        } catch (error) {
+            console.error('Error starting face registration:', error);
+            alert('Could not access camera. Please check permissions and try again.');
+            closeFaceRegistration();
+        }
+    }
+
+    async function detectFace() {
+        const video = document.getElementById('faceVideo');
+        const statusDiv = document.getElementById('faceStatus');
+        const captureBtn = document.getElementById('captureFaceBtn');
+        const overlay = document.getElementById('faceDetectionOverlay');
+        
+        const detect = async () => {
+            if (!faceStream) return;
+            
+            try {
+                const detection = await faceapi
+                    .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+                
+                if (detection) {
+                    // Face detected
+                    detectedFaceDescriptor = detection.descriptor;
+                    statusDiv.innerHTML = '<span class="text-green-600 font-semibold">✓ Face detected! Ready to capture.</span>';
+                    captureBtn.disabled = false;
+                    overlay.classList.remove('hidden');
+                    
+                    // Draw detection box (optional)
+                    const canvas = document.getElementById('faceCanvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    
+                } else {
+                    // No face detected
+                    statusDiv.innerHTML = '<span class="text-yellow-600">⚠ No face detected. Please position your face in the camera.</span>';
+                    captureBtn.disabled = true;
+                    overlay.classList.add('hidden');
+                    detectedFaceDescriptor = null;
+                }
+                
+                // Continue detection loop
+                setTimeout(detect, 100);
+                
+            } catch (error) {
+                console.error('Detection error:', error);
+                setTimeout(detect, 100);
+            }
+        };
+        
+        detect();
+    }
+
+    async function captureFace() {
+        if (!detectedFaceDescriptor) {
+            alert('No face detected. Please try again.');
+            return;
+        }
+        
+        const captureBtn = document.getElementById('captureFaceBtn');
+        captureBtn.disabled = true;
+        captureBtn.textContent = 'Registering...';
+        
+        try {
+            // Convert descriptor to JSON string
+            const descriptorArray = Array.from(detectedFaceDescriptor);
+            const descriptorJson = JSON.stringify(descriptorArray);
+            
+            // Send to server
+            const response = await fetch('{{ route("profile.register-face") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    face_descriptor: descriptorJson
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('✓ Face registered successfully!');
+                closeFaceRegistration();
+                location.reload();
+            } else {
+                alert('Failed to register face. Please try again.');
+                captureBtn.disabled = false;
+                captureBtn.textContent = 'Capture & Register';
+            }
+            
+        } catch (error) {
+            console.error('Error registering face:', error);
+            alert('Error registering face. Please try again.');
+            captureBtn.disabled = false;
+            captureBtn.textContent = 'Capture & Register';
+        }
+    }
+
+    function closeFaceRegistration() {
+        // Stop camera
+        if (faceStream) {
+            faceStream.getTracks().forEach(track => track.stop());
+            faceStream = null;
+        }
+        
+        // Reset UI
+        document.getElementById('faceRegistrationModal').classList.add('hidden');
+        document.getElementById('faceVideo').srcObject = null;
+        document.getElementById('faceStatus').innerHTML = '';
+        document.getElementById('captureFaceBtn').disabled = true;
+        document.getElementById('captureFaceBtn').textContent = 'Capture & Register';
+        document.getElementById('faceDetectionOverlay').classList.add('hidden');
+        detectedFaceDescriptor = null;
     }
 </script>
 @endsection

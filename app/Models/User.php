@@ -27,6 +27,7 @@ class User extends Authenticatable
         'school',
         'profile_picture',
         'cover_photo',
+        'face_descriptor',
     ];
 
     /**

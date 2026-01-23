@@ -122,14 +122,25 @@ class DtrController extends Controller
             : Carbon::now();
         
         // Create new DTR record
-        DtrLog::create([
+        $dtr = DtrLog::create([
             'user_id' => $user->id,
             'date' => $today,
             'time_in' => $timeIn,
             'break_hours' => 1,
             'notes' => $request->notes,
             'status' => 'pending',
+            'face_confidence' => $request->face_confidence,
         ]);
+        
+        // Save face photo if provided
+        if ($request->has('face_photo')) {
+            $faceData = $request->face_photo;
+            $image = str_replace('data:image/jpeg;base64,', '', $faceData);
+            $image = str_replace(' ', '+', $image);
+            $imageName = 'face_' . $user->id . '_' . time() . '.jpg';
+            \Storage::disk('public')->put('faces/' . $imageName, base64_decode($image));
+            $dtr->update(['face_photo' => 'faces/' . $imageName]);
+        }
         
         return redirect()->route('dashboard')->with('success', 'Successfully timed in!');
     }
@@ -165,6 +176,27 @@ class DtrController extends Controller
         if ($request->notes) {
             $dtr->notes = $request->notes;
         }
+        
+        // Update face confidence if provided
+        if ($request->has('face_confidence')) {
+            $dtr->face_confidence = $request->face_confidence;
+        }
+        
+        // Save face photo if provided
+        if ($request->has('face_photo')) {
+            // Delete old face photo if exists
+            if ($dtr->face_photo && \Storage::disk('public')->exists($dtr->face_photo)) {
+                \Storage::disk('public')->delete($dtr->face_photo);
+            }
+            
+            $faceData = $request->face_photo;
+            $image = str_replace('data:image/jpeg;base64,', '', $faceData);
+            $image = str_replace(' ', '+', $image);
+            $imageName = 'face_' . $user->id . '_' . time() . '.jpg';
+            \Storage::disk('public')->put('faces/' . $imageName, base64_decode($image));
+            $dtr->face_photo = 'faces/' . $imageName;
+        }
+        
         $dtr->calculateTotalHours();
         
         // Check milestones after time out

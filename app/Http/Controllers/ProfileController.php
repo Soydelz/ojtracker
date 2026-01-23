@@ -32,6 +32,7 @@ class ProfileController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'school' => ['nullable', 'string', 'max:255'],
             'required_hours' => ['nullable', 'numeric', 'min:1', 'max:2000'],
+            'face_descriptor' => ['nullable', 'string'],
         ]);
 
         // Check if email changed
@@ -125,5 +126,26 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.index')
             ->with('success', 'Cover photo updated successfully!');
+    }
+
+    /**
+     * Register face descriptor
+     */
+    public function registerFace(Request $request)
+    {
+        $request->validate([
+            'face_descriptor' => ['required', 'string'],
+        ]);
+
+        $user = auth()->user();
+        
+        $user->update([
+            'face_descriptor' => $request->face_descriptor
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Face registered successfully!'
+        ]);
     }
 }

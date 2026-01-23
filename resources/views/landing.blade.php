@@ -16,6 +16,9 @@
         <!-- Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         
+        <!-- Face-API.js Library -->
+        <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+        
         <style>
             body {
                 font-family: 'Inter', sans-serif;
@@ -549,6 +552,37 @@
                             <p class="text-red-500 text-xs mt-1 hidden" id="register_password_confirmation_error"></p>
                         </div>
 
+                        <!-- Face Registration Step (REQUIRED) -->
+                        <div class="mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-800 mb-1">
+                                        Face Recognition <span class="text-red-600">*</span>
+                                    </label>
+                                    <p class="text-xs text-gray-600">Required for DTR Time In/Out attendance</p>
+                                </div>
+                                <span id="face_status_badge" class="hidden inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Captured
+                                </span>
+                            </div>
+                            
+                            <button type="button" onclick="captureFaceRegistration()" 
+                                    class="w-full px-4 py-2 bg-white border-2 border-indigo-300 text-indigo-700 rounded-lg hover:bg-indigo-50 transition flex items-center justify-center text-sm font-medium">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                Capture Face
+                            </button>
+                            
+                            <input type="hidden" id="register_face_descriptor" name="face_descriptor" required>
+                            <span id="face_status_badge" class="hidden ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"></span>
+                            <p class="text-xs text-red-600 mt-2 font-medium"><strong>Required:</strong> Face registration is mandatory for DTR attendance logs.</p>
+                        </div>
+
                         <!-- Submit Button -->
                         <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-lg">
                             Create Account
@@ -616,6 +650,62 @@
                             Back to Login
                         </button>
                     </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Face Capture Modal -->
+        <div id="faceCaptureModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+                <div class="p-6">
+                    <!-- Modal Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">Register Your Face <span class="text-red-600">*</span></h2>
+                        <button onclick="closeFaceCapture()" class="text-gray-400 hover:text-gray-600 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Camera Container -->
+                    <div class="relative bg-gray-900 rounded-lg overflow-hidden mb-4" style="aspect-ratio: 4/3;">
+                        <video id="faceVideo" autoplay muted playsinline class="w-full h-full object-cover"></video>
+                        <canvas id="faceCanvas" class="hidden"></canvas>
+                        
+                        <!-- Face Detection Overlay -->
+                        <div id="faceDetectionOverlay" class="absolute inset-0 pointer-events-none"></div>
+                        
+                        <!-- Status Messages -->
+                        <div id="faceStatus" class="absolute top-4 left-4 right-4">
+                            <div class="bg-white bg-opacity-90 rounded-lg px-4 py-2 text-sm font-medium text-center">
+                                <span id="faceStatusText">Initializing camera...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                        <p class="text-sm text-blue-800">
+                            <strong>Required for DTR Attendance:</strong><br>
+                            • Look directly at the camera<br>
+                            • Ensure good lighting<br>
+                            • Remove sunglasses/mask<br>
+                            • This will be used for Time In/Out verification
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeFaceCapture()" 
+                                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                            Cancel
+                        </button>
+                        <button type="button" id="captureFaceBtn" onclick="captureFaceForRegistration()" disabled
+                                class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            Capture Face
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1429,5 +1519,8 @@
             @endif
         </script>
 
+    <script src="{{ asset('js/face-registration.js') }}"></script>
+        <!-- Face Recognition Script -->
+        <script src="{{ asset('js/face-registration.js') }}"></script>
     </body>
 </html>

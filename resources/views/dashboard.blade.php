@@ -136,12 +136,15 @@
                             <div class="mb-4">
                                 <textarea name="notes" rows="2" placeholder="Notes (optional)" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">{{ $todayDtr->notes ?? '' }}</textarea>
                             </div>
-                            <button type="submit" class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition duration-200 shadow-lg">
+                            <input type="hidden" name="face_photo" id="timeOutFacePhoto">
+                            <input type="hidden" name="face_confidence" id="timeOutFaceConfidence">
+                            <button type="button" onclick="openFaceVerificationModal('timeout')" class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition duration-200 shadow-lg">
                                 <div class="flex items-center justify-center space-x-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
-                                    <span>Time Out Now</span>
+                                    <span>Verify Face & Time Out</span>
                                 </div>
                             </button>
                         </form>
@@ -172,11 +175,14 @@
                         <div class="mb-4">
                             <textarea name="notes" rows="2" placeholder="Notes (optional)" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                         </div>
-                        <button type="submit" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-lg">
+                        <input type="hidden" name="face_photo" id="timeInFacePhoto">
+                        <input type="hidden" name="face_confidence" id="timeInFaceConfidence">
+                        <button type="button" onclick="openFaceVerificationModal('timein')" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-lg">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
-                            Time In Now
+                            Verify Face & Time In
                         </button>
                     </form>
                 </div>
@@ -254,9 +260,75 @@
             @endforelse
         </div>
     </div>
+
+    <!-- Face Verification Modal -->
+    <div id="faceVerificationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="p-6">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-900">Verify Your Face</h2>
+                    <button onclick="closeFaceVerificationModal()" class="text-gray-400 hover:text-gray-600 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Camera Container -->
+                <div class="relative bg-gray-900 rounded-lg overflow-hidden mb-4" style="aspect-ratio: 4/3;">
+                    <video id="verifyFaceVideo" autoplay muted playsinline class="w-full h-full object-cover"></video>
+                    
+                    <!-- Face Detection Overlay -->
+                    <div id="verifyFaceOverlay" class="absolute inset-0 pointer-events-none"></div>
+                    
+                    <!-- Status Messages -->
+                    <div class="absolute top-4 left-4 right-4">
+                        <div class="bg-white bg-opacity-90 rounded-lg px-4 py-2 text-sm font-medium text-center">
+                            <span id="verifyFaceStatus">Initializing camera...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instructions -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                    <p class="text-sm text-blue-800">
+                        <strong>Face Verification:</strong><br>
+                        • Your face will be compared with registered face<br>
+                        • Match must be ≥60% to proceed<br>
+                        • Ensure good lighting and look directly at camera
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeFaceVerificationModal()" 
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                    <button type="button" id="verifyFaceBtn" onclick="verifyAndSubmit()" disabled
+                            class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        Verify & Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- Face-API.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+<script defer src="{{ asset('js/face-verification.js') }}"></script>
+
 <script>
+    // Set user face descriptor from Laravel
+    window.addEventListener('load', function() {
+        const userDescriptor = @json(auth()->user()->face_descriptor ? json_decode(auth()->user()->face_descriptor) : null);
+        if (userDescriptor && typeof setUserFaceDescriptor === 'function') {
+            setUserFaceDescriptor(userDescriptor);
+        }
+    });
+
     // Toggle manual time in input
     const manualTimeInCheckbox = document.getElementById('manualTimeIn');
     const manualTimeInInput = document.getElementById('manualTimeInInput');

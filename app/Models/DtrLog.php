@@ -19,6 +19,8 @@ class DtrLog extends Model
         'total_hours',
         'status',
         'notes',
+        'face_photo',
+        'face_confidence',
     ];
 
     protected $casts = [
@@ -27,6 +29,7 @@ class DtrLog extends Model
         'time_out' => 'datetime',
         'break_hours' => 'decimal:2',
         'total_hours' => 'decimal:2',
+        'face_confidence' => 'decimal:2',
     ];
 
     /**

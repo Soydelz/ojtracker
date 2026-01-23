@@ -38,6 +38,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'school' => ['required', 'string', 'max:255'],
             'required_hours' => ['required', 'integer', 'min:1', 'max:2000'],
+            'face_descriptor' => ['required', 'string'],
         ]);
 
         // Check if email was verified (auto-verify in production to avoid SMTP issues)
@@ -52,6 +53,7 @@ class RegisteredUserController extends Controller
             'school' => $request->school,
             'required_hours' => $request->required_hours,
             'email_verified_at' => ($emailVerified || $isProduction) ? now() : null,
+            'face_descriptor' => $request->face_descriptor,
         ]);
         
         // Clear the verification cache
