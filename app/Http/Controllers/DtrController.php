@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DtrLog;
 use App\Services\NotificationService;
+use App\Helpers\DatabaseHelper;
 use Carbon\Carbon;
 
 class DtrController extends Controller
@@ -25,14 +26,21 @@ class DtrController extends Controller
         
         if ($search) {
             $query->where(function($q) use ($search) {
-                $q->where('notes', 'LIKE', "%{$search}%")
-                  ->orWhereRaw("DATE_FORMAT(date, '%M %d, %Y') LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("DATE_FORMAT(date, '%b %d, %Y') LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("DATE_FORMAT(date, '%Y-%m-%d') LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("DATE_FORMAT(date, '%M') LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("DATE_FORMAT(date, '%W') LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("DATE_FORMAT(date, '%d') LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("DATE_FORMAT(date, '%Y') LIKE ?", ["%{$search}%"]);
+                $dateFormats = [
+                    '%M %d, %Y',  // January 15, 2026
+                    '%b %d, %Y',  // Jan 15, 2026
+                    '%Y-%m-%d',   // 2026-01-15
+                    '%M',         // January
+                    '%W',         // Monday
+                    '%d',         // 15
+                    '%Y'          // 2026
+                ];
+                
+                $q->where('notes', 'LIKE', "%{$search}%");
+                
+                foreach ($dateFormats as $format) {
+                    $q->orWhereRaw(DatabaseHelper::formatDate('date', $format) . " LIKE ?", ["%{$search}%"]);
+                }
             });
         }
         

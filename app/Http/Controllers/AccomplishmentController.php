@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Accomplishment;
+use App\Helpers\DatabaseHelper;
 use Carbon\Carbon;
 
 class AccomplishmentController extends Controller
@@ -24,12 +25,19 @@ class AccomplishmentController extends Controller
         
         if ($search) {
             $query->where(function($q) use ($search) {
+                $dateFormats = [
+                    '%M %d, %Y',  // January 15, 2026
+                    '%b %d, %Y',  // Jan 15, 2026
+                    '%M',         // January
+                    '%W'          // Monday
+                ];
+                
                 $q->where('task_description', 'LIKE', "%{$search}%")
-                  ->orWhere('tools_used', 'LIKE', "%{$search}%")
-                  ->orWhereRaw("DATE_FORMAT(date, '%M %d, %Y') LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("DATE_FORMAT(date, '%b %d, %Y') LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("DATE_FORMAT(date, '%M') LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("DATE_FORMAT(date, '%W') LIKE ?", ["%{$search}%"]);
+                  ->orWhere('tools_used', 'LIKE', "%{$search}%");
+                
+                foreach ($dateFormats as $format) {
+                    $q->orWhereRaw(DatabaseHelper::formatDate('date', $format) . " LIKE ?", ["%{$search}%"]);
+                }
             });
         }
         
