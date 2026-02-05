@@ -12,16 +12,21 @@ class DatabaseHelper
      */
     public static function formatDate($column, $format)
     {
-        $driver = config('database.default');
-        
-        if ($driver === 'pgsql') {
-            // PostgreSQL uses TO_CHAR
-            $pgFormat = self::convertToPgFormat($format);
-            return "TO_CHAR({$column}, '{$pgFormat}')";
+        try {
+            $driver = config('database.default', 'mysql');
+            
+            if ($driver === 'pgsql') {
+                // PostgreSQL uses TO_CHAR
+                $pgFormat = self::convertToPgFormat($format);
+                return "TO_CHAR({$column}::timestamp, '{$pgFormat}')";
+            }
+            
+            // MySQL uses DATE_FORMAT
+            return "DATE_FORMAT({$column}, '{$format}')";
+        } catch (\Exception $e) {
+            // Fallback to MySQL format if any error
+            return "DATE_FORMAT({$column}, '{$format}')";
         }
-        
-        // MySQL uses DATE_FORMAT
-        return "DATE_FORMAT({$column}, '{$format}')";
     }
     
     /**
