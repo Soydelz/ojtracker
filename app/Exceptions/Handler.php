@@ -24,7 +24,27 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
-            //
+            // Log errors to stderr so they appear in Render logs
+            error_log("LARAVEL ERROR: " . $e->getMessage());
+            error_log("FILE: " . $e->getFile() . " LINE: " . $e->getLine());
         });
+    }
+    
+    /**
+     * Render an exception into an HTTP response.
+     */
+    public function render($request, Throwable $e)
+    {
+        // Always show detailed errors for debugging
+        if (config('app.debug') || env('APP_DEBUG') === 'true' || env('APP_DEBUG') === true) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+        
+        return parent::render($request, $e);
     }
 }
