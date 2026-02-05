@@ -54,21 +54,25 @@ RUN echo '#!/bin/bash\n\
 set -e\n\
 echo "Starting Laravel setup..."\n\
 \n\
+# Ensure storage directories exist and have correct permissions\n\
+mkdir -p /var/www/storage/framework/{sessions,views,cache}\n\
+mkdir -p /var/www/storage/logs\n\
+mkdir -p /var/www/bootstrap/cache\n\
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache\n\
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache\n\
+\n\
 # Clear any existing caches\n\
 php artisan config:clear || true\n\
 php artisan cache:clear || true\n\
 php artisan view:clear || true\n\
+php artisan route:clear || true\n\
 \n\
 # Run migrations\n\
-php artisan migrate --force || echo "Migration failed, continuing..."\n\
+php artisan migrate --force || echo "Migration warning, continuing..."\n\
 \n\
 # Create storage link\n\
+rm -rf /var/www/public/storage\n\
 php artisan storage:link || echo "Storage link exists"\n\
-\n\
-# Cache configuration\n\
-php artisan config:cache\n\
-php artisan route:cache\n\
-php artisan view:cache\n\
 \n\
 echo "Starting PHP-FPM..."\n\
 php-fpm -D\n\
