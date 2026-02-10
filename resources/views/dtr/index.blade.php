@@ -112,6 +112,7 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Hours</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -146,10 +147,19 @@
                             <td class="px-4 py-3">
                                 <div class="text-sm text-gray-600 max-w-xs truncate">{{ $dtr->notes ?: '-' }}</div>
                             </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-center">
+                                <button onclick="openEditModal({{ $dtr->id }}, '{{ \Carbon\Carbon::parse($dtr->date)->format('Y-m-d') }}', '{{ \Carbon\Carbon::parse($dtr->time_in)->format('H:i') }}', '{{ \Carbon\Carbon::parse($dtr->time_out)->format('H:i') }}', '{{ $dtr->break_hours }}', '{{ addslashes($dtr->notes) }}')" 
+                                        class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition" title="Edit">
+                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                    Edit
+                                </button>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="px-6 py-12 text-center">
+                            <td colspan="10" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center">
                                     <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -293,6 +303,85 @@
     </div>
 </div>
 
+<!-- Edit DTR Modal -->
+<div id="editDtrModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="document.getElementById('editDtrModal').classList.add('hidden')"></div>
+
+        <!-- Modal panel -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <form id="editDtrForm" method="POST" action="">
+                @csrf
+                @method('PUT')
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
+                            <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </div>
+                        <h3 class="ml-3 text-lg font-medium text-gray-900">Edit DTR Record</h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Date -->
+                        <div>
+                            <label for="edit_date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                            <input type="date" id="edit_date" name="date" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Time In -->
+                        <div>
+                            <label for="edit_time_in" class="block text-sm font-medium text-gray-700 mb-1">Time In</label>
+                            <input type="time" id="edit_time_in" name="time_in" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Time Out -->
+                        <div>
+                            <label for="edit_time_out" class="block text-sm font-medium text-gray-700 mb-1">Time Out</label>
+                            <input type="time" id="edit_time_out" name="time_out" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Break Hours -->
+                        <div>
+                            <label for="edit_break_hours" class="block text-sm font-medium text-gray-700 mb-1">Lunch Break</label>
+                            <input type="text" id="edit_break_hours_display" readonly
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
+                                   value="1 Hour">
+                            <input type="hidden" name="break_hours" id="edit_break_hours" value="1">
+                            <p class="mt-1 text-xs text-gray-500">Fixed 1-hour lunch break deduction</p>
+                        </div>
+
+                        <!-- Notes (Optional) -->
+                        <div>
+                            <label for="edit_notes" class="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                            <textarea id="edit_notes" name="notes" rows="3"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Any additional notes..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="submit" 
+                            class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition">
+                        Update Record
+                    </button>
+                    <button type="button" 
+                            onclick="document.getElementById('editDtrModal').classList.add('hidden')"
+                            class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm transition">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @if($errors->any())
 <script>
     document.getElementById('addDtrModal').classList.remove('hidden');
@@ -300,6 +389,17 @@
 @endif
 
 <script>
+    // Function to open edit modal with data
+    function openEditModal(id, date, timeIn, timeOut, breakHours, notes) {
+        document.getElementById('editDtrForm').action = `/dtr/${id}`;
+        document.getElementById('edit_date').value = date;
+        document.getElementById('edit_time_in').value = timeIn;
+        document.getElementById('edit_time_out').value = timeOut;
+        document.getElementById('edit_break_hours').value = breakHours;
+        document.getElementById('edit_notes').value = notes;
+        document.getElementById('editDtrModal').classList.remove('hidden');
+    }
+
     const searchInput = document.getElementById('searchInput');
     const clearButton = document.getElementById('clearSearch');
     const perPageValue = document.getElementById('perPageValue');

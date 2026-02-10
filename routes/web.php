@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/dtr/store', [DtrController::class, 'store'])->name('dtr.store');
     Route::post('/dtr/timein', [DtrController::class, 'timeIn'])->name('dtr.timein');
     Route::post('/dtr/timeout', [DtrController::class, 'timeOut'])->name('dtr.timeout');
+    Route::put('/dtr/{dtr}', [DtrController::class, 'update'])->name('dtr.update');
 });
 
 // Accomplishments Routes

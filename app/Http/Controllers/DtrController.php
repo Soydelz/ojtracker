@@ -212,4 +212,62 @@ class DtrController extends Controller
         
         return redirect()->route('dashboard')->with('success', 'Successfully timed out! Total hours: ' . number_format($dtr->total_hours, 2));
     }
+
+    /**
+     * Update DTR record
+     */
+    public function update(Request $request, DtrLog $dtr)
+    {
+        $user = auth()->user();
+        
+        // Ensure user can only edit their own DTR records
+        if ($dtr->user_id !== $user->id) {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+        
+        // Validate input
+        $validated = $request->validate([
+            'date' => 'required|date|before_or_equal:today',
+            'time_in' => 'required|date_format:H:i',
+            'time_out' => 'required|date_format:H:i|after:time_in',
+            'break_hours' => 'nullable|numeric|min:0|max:8',
+            'notes' => 'nullable|string|max:500',
+        ], [
+            'date.before_or_equal' => 'Cannot edit DTR for future dates.',
+            'time_out.after' => 'Time out must be after time in.',
+        ]);
+        
+        // Check if DTR already exists for this date (excluding current record)
+        $existingDtr = DtrLog::forUser($user->id)
+            ->whereDate('date', $validated['date'])
+            ->where('id', '!=', $dtr->id)
+            ->first();
+        
+        if ($existingDtr) {
+            return redirect()->back()
+                ->withErrors(['date' => 'DTR record already exists for this date.'])
+                ->withInput();
+        }
+        
+        // Combine date with time
+        $timeIn = Carbon::parse($validated['date'] . ' ' . $validated['time_in']);
+        $timeOut = Carbon::parse($validated['date'] . ' ' . $validated['time_out']);
+        
+        // Calculate hours (subtract break)
+        $rawHours = $timeOut->diffInMinutes($timeIn) / 60;
+        $breakHours = $validated['break_hours'] ?? 1;
+        $totalHours = $rawHours - $breakHours;
+        
+        // Update DTR record
+        $dtr->update([
+            'date' => $validated['date'],
+            'time_in' => $timeIn,
+            'time_out' => $timeOut,
+            'break_hours' => $breakHours,
+            'total_hours' => $totalHours,
+            'notes' => $validated['notes'],
+        ]);
+        
+        return redirect()->route('dtr.index')->with('success', 'DTR record updated successfully! Total hours: ' . number_format($totalHours, 2));
+    }
 }
