@@ -265,6 +265,7 @@ class DtrController extends Controller
             'time_out' => $timeOut,
             'break_hours' => $breakHours,
             'total_hours' => $totalHours,
+            'status' => 'completed',
             'notes' => $validated['notes'],
         ]);
         
