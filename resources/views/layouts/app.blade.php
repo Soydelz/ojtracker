@@ -21,9 +21,65 @@
     
     <style>
         [x-cloak] { display: none !important; }
+        
+        /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+        
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .loading-spinner {
+            width: 140px;
+            height: 140px;
+            border: 6px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
     </style>
 </head>
 <body class="antialiased bg-gray-50">
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-spinner">
+            <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="Loading..." class="loading-logo">
+        </div>
+    </div>
+    
     <div class="min-h-screen">
         <!-- Sidebar -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 transform transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full">
@@ -330,6 +386,39 @@
         window.addEventListener('resize', function() {
             if (window.innerWidth >= 1024) {
                 document.getElementById('sidebar-overlay').classList.add('hidden');
+            }
+        });
+
+        // Loading Screen Handler
+        const loadingScreen = document.getElementById('loading-screen');
+        
+        // Hide loading screen when page is fully loaded
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+            }, 500); // Small delay for smooth transition
+        });
+        
+        // Show loading screen on navigation (clicking links)
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (link && link.href && !link.target && !link.href.startsWith('#') && !link.href.includes('javascript:')) {
+                const isSameDomain = link.hostname === window.location.hostname;
+                if (isSameDomain) {
+                    loadingScreen.classList.remove('hidden');
+                }
+            }
+        });
+        
+        // Show loading screen on form submission
+        document.addEventListener('submit', function(e) {
+            loadingScreen.classList.remove('hidden');
+        });
+        
+        // Hide loading screen if navigation is cancelled (back button, etc)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                loadingScreen.classList.add('hidden');
             }
         });
     </script>
