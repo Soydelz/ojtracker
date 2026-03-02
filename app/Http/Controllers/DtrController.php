@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DtrLog;
 use App\Services\NotificationService;
+use App\Helpers\DatabaseHelper;
 use Carbon\Carbon;
 
 class DtrController extends Controller
@@ -38,7 +39,7 @@ class DtrController extends Controller
                 $q->where('notes', 'LIKE', "%{$search}%");
                 
                 foreach ($dateFormats as $format) {
-                    $q->orWhereRaw("DATE_FORMAT(date, '{$format}') LIKE ?", ["%{$search}%"]);
+                    $q->orWhereRaw(DatabaseHelper::formatDate('date', $format) . " LIKE ?", ["%{$search}%"]);
                 }
             });
         }
