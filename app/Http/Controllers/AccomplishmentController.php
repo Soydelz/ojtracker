@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Accomplishment;
-use App\Helpers\DatabaseHelper;
 use Carbon\Carbon;
 
 class AccomplishmentController extends Controller
@@ -36,7 +35,7 @@ class AccomplishmentController extends Controller
                   ->orWhere('tools_used', 'LIKE', "%{$search}%");
                 
                 foreach ($dateFormats as $format) {
-                    $q->orWhereRaw(DatabaseHelper::formatDate('date', $format) . " LIKE ?", ["%{$search}%"]);
+                    $q->orWhereRaw("DATE_FORMAT(date, '{$format}') LIKE ?", ["%{$search}%"]);
                 }
             });
         }

@@ -17,3 +17,13 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Deployment configurations
+Dockerfile
+docker/
+fly.toml
+render.yaml
+Procfile
+Procfile.*
+nixpacks.toml
+.fly/
