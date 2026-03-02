@@ -18,12 +18,6 @@ yarn-error.log
 /.idea
 /.vscode
 
-# Deployment configurations
-Dockerfile
-docker/
+# Deployment configurations (fly.io only - not used)
 fly.toml
-render.yaml
-Procfile
-Procfile.*
-nixpacks.toml
 .fly/
