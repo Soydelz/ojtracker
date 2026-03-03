@@ -61,15 +61,6 @@ mkdir -p /var/www/html/bootstrap/cache\n\
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache\n\
 \n\
-# Clear caches\n\
-php artisan config:clear || true\n\
-php artisan cache:clear || true\n\
-php artisan view:clear || true\n\
-php artisan route:clear || true\n\
-\n\
-# Run migrations\n\
-php artisan migrate --force || echo "Migration warning, continuing..."\n\
-\n\
 # Cache config for production\n\
 php artisan config:cache || true\n\
 php artisan route:cache || true\n\

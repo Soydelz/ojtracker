@@ -9,6 +9,9 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
+// Lightweight health check for Render - no DB required
+Route::get('/ping', fn() => response('ok', 200));
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
