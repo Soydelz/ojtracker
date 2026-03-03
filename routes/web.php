@@ -9,8 +9,11 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
-// Lightweight health check for Render - no DB required
-Route::get('/ping', fn() => response('ok', 200));
+// Health check for Render + Neon keep-alive (UptimeRobot pings this)
+Route::get('/ping', function() {
+    \Illuminate\Support\Facades\DB::select('SELECT 1');
+    return response('ok', 200);
+});
 
 /*
 |--------------------------------------------------------------------------
