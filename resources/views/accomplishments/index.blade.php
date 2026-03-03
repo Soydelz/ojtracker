@@ -414,7 +414,10 @@
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
+            return response.text();
+        })
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
@@ -424,6 +427,9 @@
                 tableContainer.innerHTML = newTable.innerHTML;
                 attachPaginationEvents();
             }
+        })
+        .catch(err => {
+            console.error('Pagination error:', err);
         });
     }
     
@@ -431,6 +437,7 @@
         document.querySelectorAll('.pagination-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation(); // Prevent layout's global click handler from showing the page loader
                 const url = new URL(this.href);
                 const page = url.searchParams.get('page');
                 const search = searchInput.value;
