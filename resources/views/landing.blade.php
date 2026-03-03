@@ -501,38 +501,9 @@
                             <label for="register_email" class="block text-sm font-medium text-gray-700 mb-2">
                                 Email <span class="text-red-500">*</span>
                             </label>
-                            <div class="flex gap-2">
-                                <input type="email" id="register_email" name="email" required
-                                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
-                                <button type="button" id="send_verification_btn" onclick="sendVerificationCode()" 
-                                        class="px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition whitespace-nowrap text-sm font-medium">
-                                    Send Code
-                                </button>
-                            </div>
+                            <input type="email" id="register_email" name="email" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
                             <p class="text-red-500 text-xs mt-1 hidden" id="register_email_error"></p>
-                            <p class="text-green-600 text-xs mt-1 hidden" id="register_email_success"></p>
-                            
-                            <!-- Verification Code Input (hidden by default) -->
-                            <div id="verification_code_container" class="mt-3 hidden">
-                                <label for="verification_code" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Verification Code <span class="text-red-500">*</span>
-                                </label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="verification_code" maxlength="6" placeholder="Enter 6-digit code"
-                                           class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
-                                    <button type="button" id="verify_code_btn" onclick="verifyCode()" 
-                                            class="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition whitespace-nowrap text-sm font-medium">
-                                        Verify
-                                    </button>
-                                </div>
-                                <p class="text-red-500 text-xs mt-1 hidden" id="verification_code_error"></p>
-                                <p class="text-green-600 text-xs mt-1 hidden flex items-center" id="email_verified_indicator">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Email verified successfully!
-                                </p>
-                            </div>
                         </div>
 
                         <!-- School/University -->
