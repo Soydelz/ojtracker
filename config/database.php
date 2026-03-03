@@ -75,7 +75,7 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => env('PGSSL', 'prefer'),
+            'sslmode' => env('DB_CONNECTION') === 'pgsql' ? 'require' : 'prefer',
         ],
 
         'sqlsrv' => [
