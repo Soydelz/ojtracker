@@ -12,6 +12,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
     
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -25,58 +26,113 @@
         /* Loading Screen Styles */
         #loading-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #0f0f0f;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+            gap: 0;
         }
-        
+
         #loading-screen.hidden {
             opacity: 0;
             visibility: hidden;
         }
-        
-        .loading-logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        .loading-spinner {
-            width: 140px;
-            height: 140px;
-            border: 6px solid rgba(255, 255, 255, 0.2);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+
+        .loading-logo-wrap {
+            position: relative;
+            width: 100px;
+            height: 100px;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
         }
-        
-        @keyframes spin {
+
+        .loading-logo-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #667eea, #764ba2, #f093fb, #667eea);
+            animation: spin-glow 2s linear infinite;
+            opacity: 0.7;
+        }
+
+        .loading-logo-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: #0f0f0f;
+        }
+
+        .loading-logo {
+            width: 72px;
+            height: 72px;
+            position: relative;
+            z-index: 1;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .loading-app-name {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            letter-spacing: 0.35em;
+            color: #ffffff;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .loading-bar-track {
+            width: 160px;
+            height: 3px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            height: 100%;
+            width: 45%;
+            background: linear-gradient(90deg, #667eea, #f093fb, #764ba2);
+            border-radius: 99px;
+            animation: bar-slide 1.4s ease-in-out infinite;
+        }
+
+        /* Hide sidebar nav scrollbar but keep it scrollable */
+        #sidebar nav::-webkit-scrollbar { display: none; }
+        #sidebar nav { scrollbar-width: none; -ms-overflow-style: none; }
+
+        @keyframes spin-glow {
             to { transform: rotate(360deg); }
         }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
         }
+
+        @keyframes bar-slide {
+            0%   { transform: translateX(-120%); }
+            100% { transform: translateX(320%); }
+        }
+
     </style>
 </head>
 <body class="antialiased bg-gray-50">
     <!-- Loading Screen -->
     <div id="loading-screen">
-        <div class="loading-spinner">
+        <div class="loading-logo-wrap">
             <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="Loading..." class="loading-logo">
+        </div>
+        <div class="loading-app-name">OJTracker</div>
+        <div class="loading-bar-track">
+            <div class="loading-bar-fill"></div>
         </div>
     </div>
     
@@ -134,6 +190,84 @@
                         <span class="truncate">Profile</span>
                     </a>
                 </nav>
+
+                <!-- Developer Watermark -->
+                <div class="flex-shrink-0 flex items-center justify-center select-none overflow-hidden" style="height:11rem;">
+                    <div style="transform: rotate(-35deg); position: relative;">
+                        <!-- Watermark text -->
+                        <span class="ig-trigger" style="
+                            font-family: 'Bebas Neue', cursive;
+                            font-size: 2rem;
+                            letter-spacing: 0.3em;
+                            color: rgba(255,255,255,0.18);
+                            text-transform: uppercase;
+                            white-space: nowrap;
+                            display: block;
+                            cursor: pointer;
+                            transition: color 0.2s ease;
+                        ">Soydelz</span>
+                    </div>
+                </div>
+
+                <!-- Instagram Profile Card — Fixed positioned, outside sidebar clipping -->
+                <div class="ig-popup" style="
+                    position: fixed;
+                    width: 220px;
+                    background: #1a1a1a;
+                    border: 1px solid rgba(255,255,255,0.12);
+                    border-radius: 16px;
+                    padding: 16px;
+                    opacity: 0;
+                    pointer-events: none;
+                    transform: scale(0.94) translateY(6px);
+                    transition: opacity 0.25s ease, transform 0.32s cubic-bezier(0.34,1.56,0.64,1);
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+                    z-index: 9999;
+                    text-align: center;
+                ">
+                    <!-- Avatar with IG gradient ring -->
+                    <div style="
+                        width: 68px;
+                        height: 68px;
+                        border-radius: 50%;
+                        background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+                        padding: 2.5px;
+                        margin: 0 auto 10px;
+                    ">
+                        <div style="
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 50%;
+                            background: #111;
+                            border: 2.5px solid #1a1a1a;
+                            overflow: hidden;
+                        ">
+                        <img src="{{ asset('assets/images/soydelz.jpg') }}"
+                                 style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=Soydelz&background=222&color=fff&size=128&bold=true'">
+                        </div>
+                    </div>
+                    <!-- Name -->
+                    <p style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:700; color:#f0f0f0; margin:0 0 2px;">Soydelz Dela Peña</p>
+                    <!-- Username -->
+                    <p style="font-family:'Inter',sans-serif; font-size:0.72rem; color:#9ca3af; margin:0 0 4px;">@syydlzz</p>
+                    <!-- Tag -->
+                    <p style="font-family:'Inter',sans-serif; font-size:0.68rem; color:#6b7280; margin:0 0 12px; font-style:italic;">Developer · OJTracker</p>
+                    <!-- View Profile Button -->
+                    <a href="https://instagram.com/syydlzz" target="_blank" style="
+                        display: block;
+                        background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+                        color: #fff;
+                        font-family: 'Inter', sans-serif;
+                        font-size: 0.72rem;
+                        font-weight: 700;
+                        letter-spacing: 0.05em;
+                        padding: 7px 0;
+                        border-radius: 8px;
+                        text-decoration: none;
+                        text-transform: uppercase;
+                    ">View Profile</a>
+                </div>
             </div>
         </aside>
 
@@ -424,5 +558,65 @@
     </script>
 
     @stack('scripts')
+
+    <script>
+        // Watermark IG popup — hover (desktop) + tap (mobile)
+        const trigger = document.querySelector('.ig-trigger');
+        const popup = document.querySelector('.ig-popup');
+
+        function showPopup() {
+            const rect = trigger.getBoundingClientRect();
+            let left = rect.right + 12;
+            let top = rect.top + (rect.height / 2) - 140;
+            if (top < 8) top = 8;
+            if (top + 280 > window.innerHeight) top = window.innerHeight - 288;
+            // On mobile, show above the watermark centered
+            if (window.innerWidth < 1024) {
+                left = Math.min(rect.left + 20, window.innerWidth - 232);
+                top = rect.top - 290;
+                if (top < 8) top = rect.bottom + 12;
+            }
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
+            popup.style.opacity = '1';
+            popup.style.pointerEvents = 'auto';
+            popup.style.transform = 'scale(1) translateY(0)';
+            trigger.style.color = 'rgba(255,255,255,0.45)';
+        }
+
+        function hidePopup() {
+            popup.style.opacity = '0';
+            popup.style.pointerEvents = 'none';
+            popup.style.transform = 'scale(0.94) translateY(6px)';
+            trigger.style.color = 'rgba(255,255,255,0.18)';
+        }
+
+        if (trigger && popup) {
+            // Desktop hover
+            trigger.addEventListener('mouseenter', showPopup);
+            trigger.addEventListener('mouseleave', (e) => {
+                if (!e.relatedTarget || !e.relatedTarget.closest('.ig-popup')) hidePopup();
+            });
+            popup.addEventListener('mouseleave', (e) => {
+                if (!e.relatedTarget || e.relatedTarget !== trigger) hidePopup();
+            });
+
+            // Mobile tap toggle
+            let popupOpen = false;
+            trigger.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                popupOpen ? hidePopup() : showPopup();
+                popupOpen = !popupOpen;
+            });
+
+            // Tap outside to close on mobile
+            document.addEventListener('touchend', (e) => {
+                if (popupOpen && !popup.contains(e.target) && e.target !== trigger) {
+                    hidePopup();
+                    popupOpen = false;
+                }
+            });
+        }
+    </script>
 </body>
 </html>

@@ -12,6 +12,7 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
         
         <!-- Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -55,58 +56,108 @@
             /* Loading Screen Styles */
             #loading-screen {
                 position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                top: 0; left: 0;
+                width: 100%; height: 100%;
+                background: #0f0f0f;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 z-index: 9999;
-                transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+                transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+                gap: 0;
             }
-            
+
             #loading-screen.hidden {
                 opacity: 0;
                 visibility: hidden;
             }
-            
-            .loading-logo {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 20px;
-                animation: pulse 2s ease-in-out infinite;
-            }
-            
-            .loading-spinner {
+
+            .loading-logo-wrap {
+                position: relative;
                 width: 100px;
                 height: 100px;
-                border: 4px solid rgba(255, 255, 255, 0.2);
-                border-top-color: #fff;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
                 display: flex;
-                justify-content: center;
                 align-items: center;
+                justify-content: center;
+                margin-bottom: 22px;
             }
-            
-            @keyframes spin {
+
+            .loading-logo-wrap::before {
+                content: '';
+                position: absolute;
+                inset: -8px;
+                border-radius: 50%;
+                background: conic-gradient(from 0deg, #667eea, #764ba2, #f093fb, #667eea);
+                animation: spin-glow 2s linear infinite;
+                opacity: 0.7;
+            }
+
+            .loading-logo-wrap::after {
+                content: '';
+                position: absolute;
+                inset: -2px;
+                border-radius: 50%;
+                background: #0f0f0f;
+            }
+
+            .loading-logo {
+                width: 72px;
+                height: 72px;
+                position: relative;
+                z-index: 1;
+                animation: float 3s ease-in-out infinite;
+            }
+
+            .loading-app-name {
+                font-family: 'Bebas Neue', cursive;
+                font-size: 2rem;
+                letter-spacing: 0.35em;
+                color: #ffffff;
+                margin-bottom: 32px;
+                opacity: 0.9;
+            }
+
+            .loading-bar-track {
+                width: 160px;
+                height: 3px;
+                background: rgba(255,255,255,0.08);
+                border-radius: 99px;
+                overflow: hidden;
+            }
+
+            .loading-bar-fill {
+                height: 100%;
+                width: 45%;
+                background: linear-gradient(90deg, #667eea, #f093fb, #764ba2);
+                border-radius: 99px;
+                animation: bar-slide 1.4s ease-in-out infinite;
+            }
+
+            @keyframes spin-glow {
                 to { transform: rotate(360deg); }
             }
-            
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); opacity: 1; }
-                50% { transform: scale(1.05); opacity: 0.8; }
+
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-5px); }
+            }
+
+            @keyframes bar-slide {
+                0%   { transform: translateX(-120%); }
+                100% { transform: translateX(320%); }
             }
         </style>
     </head>
     <body class="antialiased bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         <!-- Loading Screen -->
         <div id="loading-screen">
-            <div class="loading-spinner">
+            <div class="loading-logo-wrap">
                 <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="Loading..." class="loading-logo">
+            </div>
+            <div class="loading-app-name">OJTracker</div>
+            <div class="loading-bar-track">
+                <div class="loading-bar-fill"></div>
             </div>
         </div>
         
@@ -1557,7 +1608,8 @@
             // Show loading screen on navigation (clicking links)
             document.addEventListener('click', function(e) {
                 const link = e.target.closest('a');
-                if (link && link.href && !link.target && !link.href.startsWith('#') && !link.href.includes('javascript:')) {
+                const rawHref = link ? (link.getAttribute('href') || '') : '';
+                if (link && rawHref && !link.target && !rawHref.startsWith('#') && !rawHref.includes('javascript:') && !e.defaultPrevented) {
                     const isSameDomain = link.hostname === window.location.hostname;
                     if (isSameDomain) {
                         loadingScreen.classList.remove('hidden');
