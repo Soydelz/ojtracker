@@ -53,6 +53,72 @@
                 animation-delay: 4s;
             }
             
+            /* Fade In Animation */
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            .animate-fade-in {
+                animation: fadeIn 0.8s ease-out forwards;
+            }
+            
+            /* Slide Up Animation */
+            @keyframes slideUp {
+                from { opacity: 0; transform: translateY(40px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            .animate-slide-up {
+                animation: slideUp 0.6s ease-out forwards;
+            }
+            
+            /* Float Animation */
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+            }
+            
+            .animate-float {
+                animation: float 3s ease-in-out infinite;
+            }
+            
+            /* Pulse Glow Animation */
+            @keyframes pulseGlow {
+                0%, 100% { 
+                    box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+                    filter: brightness(1);
+                }
+                50% { 
+                    box-shadow: 0 0 40px rgba(6, 182, 212, 0.6), 0 0 60px rgba(59, 130, 246, 0.4);
+                    filter: brightness(1.1);
+                }
+            }
+            
+            .animate-pulse-glow {
+                animation: pulseGlow 2s ease-in-out infinite;
+            }
+            
+            /* Delayed animations for staggered effect */
+            .delay-100 { animation-delay: 0.1s; }
+            .delay-200 { animation-delay: 0.2s; }
+            .delay-300 { animation-delay: 0.3s; }
+            .delay-400 { animation-delay: 0.4s; }
+            .delay-500 { animation-delay: 0.5s; }
+            .delay-600 { animation-delay: 0.6s; }
+            
+            /* Initial state for animations */
+            .animate-on-scroll {
+                opacity: 0;
+                transform: translateY(30px);
+                transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            }
+            
+            .animate-on-scroll.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
             /* Loading Screen Styles */
             #loading-screen {
                 position: fixed;
@@ -88,7 +154,7 @@
                 position: absolute;
                 inset: -8px;
                 border-radius: 50%;
-                background: conic-gradient(from 0deg, #667eea, #764ba2, #f093fb, #667eea);
+                background: conic-gradient(from 0deg, #3B82F6, #06B6D4, #06B6D4, #3B82F6);
                 animation: spin-glow 2s linear infinite;
                 opacity: 0.7;
             }
@@ -129,7 +195,7 @@
             .loading-bar-fill {
                 height: 100%;
                 width: 45%;
-                background: linear-gradient(90deg, #667eea, #f093fb, #764ba2);
+                background: linear-gradient(90deg, #3B82F6, #06B6D4, #06B6D4);
                 border-radius: 99px;
                 animation: bar-slide 1.4s ease-in-out infinite;
             }
@@ -147,9 +213,40 @@
                 0%   { transform: translateX(-120%); }
                 100% { transform: translateX(320%); }
             }
+            
+            /* Shimmer effect */
+            @keyframes shimmer {
+                0% { background-position: -1000px 0; }
+                100% { background-position: 1000px 0; }
+            }
+            
+            .shimmer {
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+                background-size: 1000px 100%;
+                animation: shimmer 3s infinite;
+            }
+            
+            /* Matrix Canvas styling */
+            #matrixCanvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #0a0e1a;
+                filter: blur(0.5px);
+            }
+            
+            /* Glow effect for text over matrix */
+            .matrix-glow {
+                text-shadow: 
+                    0 0 10px rgba(6, 182, 212, 0.5),
+                    0 0 20px rgba(6, 182, 212, 0.3),
+                    0 0 30px rgba(6, 182, 212, 0.2);
+            }
         </style>
     </head>
-    <body class="antialiased bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <body class="antialiased bg-slate-950">
         <!-- Loading Screen -->
         <div id="loading-screen">
             <div class="loading-logo-wrap">
@@ -162,27 +259,27 @@
         </div>
         
         <!-- Navigation Bar -->
-        <nav class="fixed w-full bg-white/90 backdrop-blur-md z-50 shadow-sm border-b border-gray-100">
+        <nav class="fixed w-full bg-slate-900/95 backdrop-blur-md z-50 shadow-xl border-b border-slate-700 transform -translate-y-full animate-fade-in" style="animation-delay: 0.5s;">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
                     <!-- Logo & Brand -->
-                    <a href="#top" onclick="event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'});" class="flex items-center space-x-3 cursor-pointer">
-                        <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="OJTracker Logo" class="h-10 sm:h-12">
+                    <a href="#top" onclick="event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'});" class="flex items-center space-x-3 cursor-pointer hover:scale-105 transition-transform duration-200 group">
+                        <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="OJTracker Logo" class="h-10 sm:h-12 group-hover:drop-shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300">
                     </a>
                     
                     <!-- Auth Links -->
                     <div class="flex items-center space-x-2 sm:space-x-4">
                         @if (Route::has('login'))
                             @auth
-                                <a href="{{ url('/dashboard') }}" class="text-gray-700 hover:text-indigo-600 font-medium transition duration-200 text-sm sm:text-base">
+                                <a href="{{ url('/dashboard') }}" class="text-slate-300 hover:text-cyan-400 font-medium transition duration-200 text-sm sm:text-base">
                                     Dashboard
                                 </a>
                             @else
-                                <button onclick="openModal('loginModal')" class="text-gray-700 hover:text-indigo-600 font-medium transition duration-200 text-sm sm:text-base">
+                                <button onclick="openModal('loginModal')" class="text-slate-300 hover:text-cyan-400 font-medium transition duration-200 text-sm sm:text-base">
                                     Login
                                 </button>
                                 @if (Route::has('register'))
-                                    <button onclick="openModal('registerModal')" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-2 sm:px-6 sm:py-2.5 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-xs sm:text-base whitespace-nowrap">
+                                    <button onclick="openModal('registerModal')" class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-3 py-2 sm:px-6 sm:py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition duration-200 shadow-lg shadow-blue-500/30 transform hover:-translate-y-0.5 text-xs sm:text-base whitespace-nowrap">
                                         Get Started
                                     </button>
                                 @endif
@@ -195,41 +292,33 @@
 
         <!-- Hero Section -->
         <section class="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-            <!-- Background Image with Overlay -->
-            <div class="absolute inset-0 z-0">
-                <!-- Background Image -->
-                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80" 
-                     alt="Team collaboration" 
-                     class="w-full h-full object-cover">
-                
-                <!-- Gradient Overlay -->
-                <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/95 via-purple-900/90 to-blue-900/95"></div>
-                
-                <!-- Pattern Overlay -->
-                <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
-            </div>
+            <!-- Matrix Rain Background -->
+            <canvas id="matrixCanvas" class="absolute inset-0 z-0"></canvas>
+            
+            <!-- Gradient Overlay for readability -->
+            <div class="absolute inset-0 z-[1] bg-gradient-to-b from-slate-950/70 via-slate-950/50 to-slate-950"></div>
 
             <div class="max-w-7xl mx-auto relative z-10">
                 <div class="grid lg:grid-cols-2 gap-12 items-center">
                     
                     <!-- Left Content -->
-                    <div class="space-y-8 animate-fade-in">
+                    <div class="space-y-8">
                         <!-- Main Heading -->
                         <div class="space-y-4">
-                            <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight">
+                            <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight animate-fade-in matrix-glow">
                                 Track Your <br>
-                                <span class="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">OJT Hours</span> <br>
+                                <span class="text-cyan-400">OJT Hours</span> <br>
                                 Effortlessly
                             </h1>
-                            <p class="text-xl md:text-2xl text-gray-200 leading-relaxed max-w-xl">
+                            <p class="text-xl md:text-2xl text-gray-200 leading-relaxed max-w-xl animate-fade-in delay-200 drop-shadow-lg">
                                 Track your OJT hours easily and professionally. Manage time records, document accomplishments, and generate reports—all in one place.
                             </p>
                         </div>
 
                         <!-- CTA Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                        <div class="flex flex-col sm:flex-row gap-4 pt-4 animate-fade-in delay-400">
                             @if (Route::has('register'))
-                                <button onclick="openModal('registerModal')" class="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                                <button onclick="openModal('registerModal')" class="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl hover:from-cyan-500 hover:to-blue-500 transition-all duration-200 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/60 hover:shadow-xl transform hover:-translate-y-1 hover:scale-105">
                                     <span>Start Tracking Now</span>
                                     <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -237,7 +326,7 @@
                                 </button>
                             @endif
                             @if (Route::has('login'))
-                                <button onclick="openModal('loginModal')" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-indigo-600 bg-white rounded-xl hover:bg-indigo-50 transition-all duration-200 shadow-md hover:shadow-lg border-2 border-indigo-200 hover:border-indigo-300">
+                                <button onclick="openModal('loginModal')" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-cyan-400 bg-slate-800/80 rounded-xl hover:bg-slate-700/80 transition-all duration-200 shadow-lg hover:shadow-cyan-500/30 hover:shadow-xl border-2 border-cyan-600/30 hover:border-cyan-500/60 transform hover:-translate-y-1 hover:scale-105">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                                     </svg>
@@ -246,19 +335,27 @@
                             @endif
                         </div>
                     </div>
+                    
+                    <!-- Right Content - Floating Logo -->
+                    <div class="hidden lg:flex items-center justify-center animate-fade-in delay-300">
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+                            <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="OJTracker" class="relative w-64 h-64 md:w-80 md:h-80 animate-float drop-shadow-[0_0_50px_rgba(6,182,212,0.6)]">
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Features Section -->
-        <section class="py-24 bg-white">
+        <section class="py-24 bg-slate-900">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Header -->
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                        Everything You Need to <span class="text-indigo-600">Succeed</span>
+                <div class="text-center mb-16 animate-on-scroll">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                        Everything You Need to <span class="text-cyan-400">Succeed</span>
                     </h2>
-                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    <p class="text-xl text-slate-300 max-w-2xl mx-auto">
                         Powerful features designed specifically for OJT students and interns
                     </p>
                 </div>
@@ -267,7 +364,7 @@
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     
                     <!-- Feature 1: Daily Time Record -->
-                    <div class="group relative bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-200">
+                    <div class="group relative bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-500/30 animate-on-scroll delay-100 cursor-pointer">
                         <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div class="relative z-10">
                             <div class="bg-blue-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
@@ -275,63 +372,63 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-bold text-gray-900 group-hover:text-white mb-3 transition-colors duration-300">Daily Time Record</h3>
-                            <p class="text-gray-600 group-hover:text-blue-100 transition-colors duration-300">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-white mb-3 transition-colors duration-300">Daily Time Record</h3>
+                            <p class="text-slate-300 group-hover:text-blue-100 transition-colors duration-300">
                                 Easy time-in and time-out system with automatic hour computation. Track your daily attendance effortlessly.
                             </p>
                         </div>
                     </div>
 
                     <!-- Feature 2: Accomplishment Logs -->
-                    <div class="group relative bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-purple-200">
-                        <div class="absolute inset-0 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="group relative bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-green-500/30 animate-on-scroll delay-200 cursor-pointer">
+                        <div class="absolute inset-0 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div class="relative z-10">
-                            <div class="bg-purple-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
-                                <svg class="w-7 h-7 text-white group-hover:text-purple-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-green-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
+                                <svg class="w-7 h-7 text-white group-hover:text-green-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-bold text-gray-900 group-hover:text-white mb-3 transition-colors duration-300">Accomplishment Logs</h3>
-                            <p class="text-gray-600 group-hover:text-purple-100 transition-colors duration-300">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-white mb-3 transition-colors duration-300">Accomplishment Logs</h3>
+                            <p class="text-slate-300 group-hover:text-green-100 transition-colors duration-300">
                                 Document your daily tasks, learnings, and technologies used. Build your professional portfolio while you work.
                             </p>
                         </div>
                     </div>
 
                     <!-- Feature 3: Progress Dashboard -->
-                    <div class="group relative bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-green-200">
-                        <div class="absolute inset-0 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="group relative bg-gradient-to-br from-teal-500/20 to-teal-600/20 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-teal-500/30 animate-on-scroll delay-300 cursor-pointer">
+                        <div class="absolute inset-0 bg-gradient-to-br from-teal-600 to-teal-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div class="relative z-10">
-                            <div class="bg-green-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
-                                <svg class="w-7 h-7 text-white group-hover:text-green-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-teal-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
+                                <svg class="w-7 h-7 text-white group-hover:text-teal-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-bold text-gray-900 group-hover:text-white mb-3 transition-colors duration-300">Progress Dashboard</h3>
-                            <p class="text-gray-600 group-hover:text-green-100 transition-colors duration-300">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-white mb-3 transition-colors duration-300">Progress Dashboard</h3>
+                            <p class="text-slate-300 group-hover:text-teal-100 transition-colors duration-300">
                                 Real-time visualization of your total hours, remaining hours, and completion percentage at a glance.
                             </p>
                         </div>
                     </div>
 
                     <!-- Feature 4: PDF Reports -->
-                    <div class="group relative bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-red-200">
-                        <div class="absolute inset-0 bg-gradient-to-br from-red-600 to-red-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="group relative bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-orange-500/30 animate-on-scroll delay-400 cursor-pointer">
+                        <div class="absolute inset-0 bg-gradient-to-br from-orange-600 to-orange-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div class="relative z-10">
-                            <div class="bg-red-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
-                                <svg class="w-7 h-7 text-white group-hover:text-red-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-orange-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
+                                <svg class="w-7 h-7 text-white group-hover:text-orange-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-bold text-gray-900 group-hover:text-white mb-3 transition-colors duration-300">PDF Reports</h3>
-                            <p class="text-gray-600 group-hover:text-red-100 transition-colors duration-300">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-white mb-3 transition-colors duration-300">PDF Reports</h3>
+                            <p class="text-slate-300 group-hover:text-orange-100 transition-colors duration-300">
                                 Generate professional weekly and monthly reports ready for submission to your OJT coordinator instantly.
                             </p>
                         </div>
                     </div>
 
                     <!-- Feature 5: Secure & Private -->
-                    <div class="group relative bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-yellow-200">
+                    <div class="group relative bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-yellow-500/30 animate-on-scroll delay-500 cursor-pointer">
                         <div class="absolute inset-0 bg-gradient-to-br from-yellow-600 to-yellow-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div class="relative z-10">
                             <div class="bg-yellow-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
@@ -339,24 +436,24 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-bold text-gray-900 group-hover:text-white mb-3 transition-colors duration-300">Secure & Private</h3>
-                            <p class="text-gray-600 group-hover:text-yellow-100 transition-colors duration-300">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-white mb-3 transition-colors duration-300">Secure & Private</h3>
+                            <p class="text-slate-300 group-hover:text-yellow-100 transition-colors duration-300">
                                 Your data is encrypted and protected. Only you can access your personal records and information.
                             </p>
                         </div>
                     </div>
 
                     <!-- Feature 6: Mobile Responsive -->
-                    <div class="group relative bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-indigo-200">
-                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="group relative bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-cyan-500/30 animate-on-scroll delay-600 cursor-pointer">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div class="relative z-10">
-                            <div class="bg-indigo-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
-                                <svg class="w-7 h-7 text-white group-hover:text-indigo-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-cyan-600 group-hover:bg-white w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors duration-300">
+                                <svg class="w-7 h-7 text-white group-hover:text-cyan-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-bold text-gray-900 group-hover:text-white mb-3 transition-colors duration-300">Mobile Responsive</h3>
-                            <p class="text-gray-600 group-hover:text-indigo-100 transition-colors duration-300">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-white mb-3 transition-colors duration-300">Mobile Responsive</h3>
+                            <p class="text-slate-300 group-hover:text-cyan-100 transition-colors duration-300">
                                 Access your tracker anywhere, anytime. Fully optimized for mobile, tablet, and desktop devices.
                             </p>
                         </div>
@@ -367,37 +464,41 @@
         </section>
 
         <!-- Stats Section -->
-        <section class="py-20 bg-gradient-to-br from-indigo-600 to-purple-600">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section class="py-20 bg-gradient-to-br from-blue-600 to-cyan-600 relative overflow-hidden">
+            <!-- Animated background circles -->
+            <div class="absolute top-0 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="grid md:grid-cols-3 gap-8 text-center">
-                    <div class="space-y-2">
-                        <p class="text-5xl font-bold text-white">Custom</p>
-                        <p class="text-indigo-200 text-lg">Set Your Own Required Hours</p>
+                    <div class="space-y-2 animate-on-scroll delay-100">
+                        <p class="text-5xl font-bold text-white transform hover:scale-110 transition-transform duration-300">Custom</p>
+                        <p class="text-blue-100 text-lg">Set Your Own Required Hours</p>
                     </div>
-                    <div class="space-y-2">
-                        <p class="text-5xl font-bold text-white">Any</p>
-                        <p class="text-indigo-200 text-lg">School or Program</p>
+                    <div class="space-y-2 animate-on-scroll delay-200">
+                        <p class="text-5xl font-bold text-white transform hover:scale-110 transition-transform duration-300">Any</p>
+                        <p class="text-blue-100 text-lg">School or Program</p>
                     </div>
-                    <div class="space-y-2">
-                        <p class="text-5xl font-bold text-white">100%</p>
-                        <p class="text-indigo-200 text-lg">Free Forever</p>
+                    <div class="space-y-2 animate-on-scroll delay-300">
+                        <p class="text-5xl font-bold text-white transform hover:scale-110 transition-transform duration-300">100%</p>
+                        <p class="text-blue-100 text-lg">Free Forever</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- CTA Section -->
-        <section class="py-24 bg-gray-50">
+        <section class="py-24 bg-slate-950">
             <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                    Ready to Start <span class="text-indigo-600">Tracking?</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 animate-on-scroll">
+                    Ready to Start <span class="text-cyan-400">Tracking?</span>
                 </h2>
-                <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+                <p class="text-xl text-slate-300 mb-10 max-w-2xl mx-auto animate-on-scroll delay-100">
                     Join students and interns who are managing their OJT hours professionally with OJTracker
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center animate-on-scroll delay-200">
                     @if (Route::has('register'))
-                        <button onclick="openModal('registerModal')" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        <button onclick="openModal('registerModal')" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl transform hover:-translate-y-1 hover:scale-105">
                             Get Started Free
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -405,7 +506,7 @@
                         </button>
                     @endif
                     @if (Route::has('login'))
-                        <button onclick="openModal('loginModal')" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-700 bg-white rounded-xl hover:bg-gray-100 transition-all duration-200 shadow-md hover:shadow-lg border border-gray-200">
+                        <button onclick="openModal('loginModal')" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-slate-300 bg-slate-800 rounded-xl hover:bg-slate-700 transition-all duration-200 shadow-lg hover:shadow-xl border border-slate-600 transform hover:-translate-y-1 hover:scale-105">
                             Already have an account? Sign In
                         </button>
                     @endif
@@ -414,14 +515,9 @@
         </section>
 
         <!-- Footer -->
-        <footer class="relative bg-gray-900 text-gray-400 py-12 overflow-hidden">
-            <!-- Background Image with Overlay -->
-            <div class="absolute inset-0 z-0">
-                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80" 
-                     alt="Background" 
-                     class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/95 via-purple-900/95 to-blue-900/95"></div>
-            </div>
+        <footer class="relative bg-slate-900 text-slate-400 py-12 overflow-hidden">
+            <!-- Background Gradient -->
+            <div class="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 via-blue-950/50 to-slate-950"></div>
             
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
@@ -440,13 +536,13 @@
         </footer>
 
         <!-- Login Modal -->
-        <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[100] flex items-center justify-center p-4">
+            <div class="bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slate-700">
                 <div class="p-8">
                     <!-- Modal Header -->
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">Welcome Back</h2>
-                        <button onclick="closeModal('loginModal')" class="text-gray-400 hover:text-gray-600 transition">
+                        <h2 class="text-2xl font-bold text-white">Welcome Back</h2>
+                        <button onclick="closeModal('loginModal')" class="text-slate-400 hover:text-white transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -459,20 +555,20 @@
                         
                         <!-- Username -->
                         <div class="mb-4">
-                            <label for="login_username" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="login_username" class="block text-sm font-medium text-slate-300 mb-2">
                                 Username <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="login_username" name="username" required autofocus value="{{ old('username') }}"
-                                   class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition @if($errors->has('username') || $errors->has('password')) border-red-500 @else border-gray-300 @endif">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @if($errors->has('username') || $errors->has('password')) border-red-500 @endif">
                         </div>
 
                         <!-- Password -->
                         <div class="mb-6">
-                            <label for="login_password" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="login_password" class="block text-sm font-medium text-slate-300 mb-2">
                                 Password <span class="text-red-500">*</span>
                             </label>
                             <input type="password" id="login_password" name="password" required
-                                   class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition @if($errors->has('username') || $errors->has('password')) border-red-500 @else border-gray-300 @endif">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @if($errors->has('username') || $errors->has('password')) border-red-500 @endif">
                             @error('username')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -484,24 +580,24 @@
                         <!-- Remember Me -->
                         <div class="flex items-center justify-between mb-6">
                             <label class="flex items-center">
-                                <input type="checkbox" id="remember_me" name="remember" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                                <input type="checkbox" id="remember_me" name="remember" class="rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-slate-300">Remember me</span>
                             </label>
-                            <button type="button" onclick="switchModal('loginModal', 'forgotPasswordModal')" class="text-sm text-indigo-600 hover:text-indigo-700">
+                            <button type="button" onclick="switchModal('loginModal', 'forgotPasswordModal')" class="text-sm text-cyan-400 hover:text-cyan-300">
                                 Forgot password?
                             </button>
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-lg">
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition duration-200 shadow-lg shadow-blue-500/30">
                             Sign In
                         </button>
                     </form>
 
                     <!-- Register Link -->
-                    <p class="mt-6 text-center text-sm text-gray-600">
+                    <p class="mt-6 text-center text-sm text-slate-400">
                         Don't have an account? 
-                        <button onclick="switchModal('loginModal', 'registerModal')" class="text-indigo-600 hover:text-indigo-700 font-semibold">
+                        <button onclick="switchModal('loginModal', 'registerModal')" class="text-cyan-400 hover:text-cyan-300 font-semibold">
                             Create Account
                         </button>
                     </p>
@@ -510,13 +606,13 @@
         </div>
 
         <!-- Register Modal -->
-        <div id="registerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div id="registerModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[100] flex items-center justify-center p-4">
+            <div class="bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slate-700">
                 <div class="p-8">
                     <!-- Modal Header -->
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">Create Account</h2>
-                        <button onclick="closeModal('registerModal')" class="text-gray-400 hover:text-gray-600 transition">
+                        <h2 class="text-2xl font-bold text-white">Create Account</h2>
+                        <button onclick="closeModal('registerModal')" class="text-slate-400 hover:text-white transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -529,63 +625,63 @@
                         
                         <!-- Name -->
                         <div class="mb-4">
-                            <label for="register_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="register_name" class="block text-sm font-medium text-slate-300 mb-2">
                                 Full Name <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="register_name" name="name" required autofocus
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <p class="text-red-500 text-xs mt-1 hidden" id="register_name_error"></p>
                         </div>
 
                         <!-- Username -->
                         <div class="mb-4">
-                            <label for="register_username" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="register_username" class="block text-sm font-medium text-slate-300 mb-2">
                                 Username <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="register_username" name="username" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <p class="text-red-500 text-xs mt-1 hidden" id="register_username_error"></p>
                         </div>
 
                         <!-- Email -->
                         <div class="mb-4">
-                            <label for="register_email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="register_email" class="block text-sm font-medium text-slate-300 mb-2">
                                 Email <span class="text-red-500">*</span>
                             </label>
                             <input type="email" id="register_email" name="email" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <p class="text-red-500 text-xs mt-1 hidden" id="register_email_error"></p>
                         </div>
 
                         <!-- School/University -->
                         <div class="mb-4">
-                            <label for="register_school" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="register_school" class="block text-sm font-medium text-slate-300 mb-2">
                                 School/University <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="register_school" name="school" required placeholder="e.g., Southern de Oro Philippines College"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <p class="text-red-500 text-xs mt-1 hidden" id="register_school_error"></p>
                         </div>
 
                         <!-- Required Hours -->
                         <div class="mb-4">
-                            <label for="register_required_hours" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="register_required_hours" class="block text-sm font-medium text-slate-300 mb-2">
                                 Required OJT Hours <span class="text-red-500">*</span>
                             </label>
                             <input type="number" id="register_required_hours" name="required_hours" value="" placeholder="e.g. 590" required min="1" max="2000"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
-                            <p class="text-xs text-gray-500 mt-1">Enter your school's required OJT hours (e.g. 300, 486, 590…)</p>
-                            <p class="text-xs text-indigo-600 mt-1 font-medium" id="calculated_days_modal">≈ 75 days of OJT</p>
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                            <p class="text-xs text-slate-400 mt-1">Enter your school's required OJT hours (e.g. 300, 486, 590…)</p>
+                            <p class="text-xs text-cyan-400 mt-1 font-medium" id="calculated_days_modal">≈ 75 days of OJT</p>
                             <p class="text-red-500 text-xs mt-1 hidden" id="register_required_hours_error"></p>
                         </div>
 
                         <!-- Password -->
                         <div class="mb-4">
-                            <label for="register_password" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="register_password" class="block text-sm font-medium text-slate-300 mb-2">
                                 Password <span class="text-red-500">*</span>
                             </label>
                             <input type="password" id="register_password" name="password" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             
                             <!-- Password Strength Indicator -->
                             <div class="mt-2 hidden" id="password_strength_container">
@@ -621,24 +717,24 @@
 
                         <!-- Confirm Password -->
                         <div class="mb-6">
-                            <label for="register_password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="register_password_confirmation" class="block text-sm font-medium text-slate-300 mb-2">
                                 Confirm Password <span class="text-red-500">*</span>
                             </label>
                             <input type="password" id="register_password_confirmation" name="password_confirmation" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <p class="text-red-500 text-xs mt-1 hidden" id="register_password_confirmation_error"></p>
                         </div>
 
                         <!-- Face Registration Step (REQUIRED) -->
-                        <div class="mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-200">
+                        <div class="mb-6 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-lg p-4 border border-blue-500/30">
                             <div class="flex items-center justify-between mb-3">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-800 mb-1">
+                                    <label class="block text-sm font-medium text-slate-200 mb-1">
                                         Face Recognition <span class="text-red-600">*</span>
                                     </label>
-                                    <p class="text-xs text-gray-600">Required for DTR Time In/Out attendance</p>
+                                    <p class="text-xs text-slate-400">Required for DTR Time In/Out attendance</p>
                                 </div>
-                                <span id="face_status_badge" class="hidden inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <span id="face_status_badge" class="hidden inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
                                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                     </svg>
@@ -647,7 +743,7 @@
                             </div>
                             
                             <button type="button" onclick="captureFaceRegistration()" 
-                                    class="w-full px-4 py-2 bg-white border-2 border-indigo-300 text-indigo-700 rounded-lg hover:bg-indigo-50 transition flex items-center justify-center text-sm font-medium">
+                                    class="w-full px-4 py-2 bg-slate-700 border-2 border-blue-500/30 text-blue-400 rounded-lg hover:bg-slate-600 transition flex items-center justify-center text-sm font-medium">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -661,15 +757,15 @@
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-lg">
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition duration-200 shadow-lg shadow-blue-500/30">
                             Create Account
                         </button>
                     </form>
 
                     <!-- Login Link -->
-                    <p class="mt-6 text-center text-sm text-gray-600">
+                    <p class="mt-6 text-center text-sm text-slate-400">
                         Already have an account? 
-                        <button onclick="switchModal('registerModal', 'loginModal')" class="text-indigo-600 hover:text-indigo-700 font-semibold">
+                        <button onclick="switchModal('registerModal', 'loginModal')" class="text-cyan-400 hover:text-cyan-300 font-semibold">
                             Sign In
                         </button>
                     </p>
@@ -678,26 +774,26 @@
         </div>
 
         <!-- Forgot Password Modal -->
-        <div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+        <div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[100] flex items-center justify-center p-4">
+            <div class="bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full border border-slate-700">
                 <div class="p-8">
                     <!-- Modal Header -->
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">Reset Password</h2>
-                        <button onclick="closeModal('forgotPasswordModal')" class="text-gray-400 hover:text-gray-600 transition">
+                        <h2 class="text-2xl font-bold text-white">Reset Password</h2>
+                        <button onclick="closeModal('forgotPasswordModal')" class="text-slate-400 hover:text-white transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
 
-                    <p class="text-gray-600 text-sm mb-6">
+                    <p class="text-slate-300 text-sm mb-6">
                         Forgot your password? No problem. Just let us know your email address and we will email you a password reset link.
                     </p>
 
                     <!-- Success Message -->
-                    <div id="forgot_password_success" class="hidden mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <p class="text-green-800 text-sm">Password reset link has been sent to your email!</p>
+                    <div id="forgot_password_success" class="hidden mb-4 p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
+                        <p class="text-green-400 text-sm">Password reset link has been sent to your email!</p>
                     </div>
 
                     <!-- Forgot Password Form -->
@@ -706,24 +802,24 @@
                         
                         <!-- Email -->
                         <div class="mb-6">
-                            <label for="forgot_email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="forgot_email" class="block text-sm font-medium text-slate-300 mb-2">
                                 Email <span class="text-red-500">*</span>
                             </label>
                             <input type="email" id="forgot_email" name="email" required autofocus
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <p class="text-red-500 text-xs mt-1 hidden" id="forgot_email_error"></p>
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-lg">
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition duration-200 shadow-lg shadow-blue-500/30">
                             Send Reset Link
                         </button>
                     </form>
 
                     <!-- Back to Login Link -->
-                    <p class="mt-6 text-center text-sm text-gray-600">
+                    <p class="mt-6 text-center text-sm text-slate-400">
                         Remember your password? 
-                        <button onclick="switchModal('forgotPasswordModal', 'loginModal')" class="text-indigo-600 hover:text-indigo-700 font-semibold">
+                        <button onclick="switchModal('forgotPasswordModal', 'loginModal')" class="text-cyan-400 hover:text-cyan-300 font-semibold">
                             Back to Login
                         </button>
                     </p>
@@ -732,13 +828,13 @@
         </div>
 
         <!-- Face Capture Modal -->
-        <div id="faceCaptureModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+        <div id="faceCaptureModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[100] flex items-center justify-center p-4">
+            <div class="bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full border border-slate-700">
                 <div class="p-6">
                     <!-- Modal Header -->
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-bold text-gray-900">Register Your Face <span class="text-red-600">*</span></h2>
-                        <button onclick="closeFaceCapture()" class="text-gray-400 hover:text-gray-600 transition">
+                        <h2 class="text-xl font-bold text-white">Register Your Face <span class="text-red-600">*</span></h2>
+                        <button onclick="closeFaceCapture()" class="text-slate-400 hover:text-white transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -746,7 +842,7 @@
                     </div>
 
                     <!-- Camera Container -->
-                    <div class="relative bg-gray-900 rounded-lg overflow-hidden mb-4" style="aspect-ratio: 4/3;">
+                    <div class="relative bg-slate-900 rounded-lg overflow-hidden mb-4 border border-slate-700" style="aspect-ratio: 4/3;">
                         <video id="faceVideo" autoplay muted playsinline class="w-full h-full object-cover"></video>
                         <canvas id="faceCanvas" class="hidden"></canvas>
                         
@@ -755,16 +851,16 @@
                         
                         <!-- Status Messages -->
                         <div id="faceStatus" class="absolute top-4 left-4 right-4">
-                            <div class="bg-white bg-opacity-90 rounded-lg px-4 py-2 text-sm font-medium text-center">
-                                <span id="faceStatusText">Initializing camera...</span>
+                            <div class="bg-slate-900/90 backdrop-blur-sm rounded-lg px-4 py-2 text-sm font-medium text-center border border-slate-700">
+                                <span id="faceStatusText" class="text-cyan-400">Initializing camera...</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Instructions -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                        <p class="text-sm text-blue-800">
-                            <strong>Required for DTR Attendance:</strong><br>
+                    <div class="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-lg p-3 mb-4">
+                        <p class="text-sm text-slate-200">
+                            <strong class="text-cyan-400">Required for DTR Attendance:</strong><br>
                             • Look directly at the camera<br>
                             • Ensure good lighting<br>
                             • Remove sunglasses/mask<br>
@@ -775,11 +871,11 @@
                     <!-- Action Buttons -->
                     <div class="flex gap-3">
                         <button type="button" onclick="closeFaceCapture()" 
-                                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                                class="flex-1 px-4 py-2 border border-slate-600 text-slate-300 rounded-lg hover:bg-slate-700 transition">
                             Cancel
                         </button>
                         <button type="button" id="captureFaceBtn" onclick="captureFaceForRegistration()" disabled
-                                class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                class="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30">
                             Capture Face
                         </button>
                     </div>
@@ -788,13 +884,13 @@
         </div>
 
         <!-- Reset Password Modal -->
-        <div id="resetPasswordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+        <div id="resetPasswordModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[100] flex items-center justify-center p-4">
+            <div class="bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full border border-slate-700">
                 <div class="p-8">
                     <!-- Modal Header -->
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">Reset Password</h2>
-                        <button onclick="closeModal('resetPasswordModal')" class="text-gray-400 hover:text-gray-600 transition">
+                        <h2 class="text-2xl font-bold text-white">Reset Password</h2>
+                        <button onclick="closeModal('resetPasswordModal')" class="text-slate-400 hover:text-white transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -808,21 +904,21 @@
                         
                         <!-- Email -->
                         <div class="mb-4">
-                            <label for="reset_email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="reset_email" class="block text-sm font-medium text-slate-300 mb-2">
                                 Email <span class="text-red-500">*</span>
                             </label>
                             <input type="email" id="reset_email" name="email" required readonly
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-400 rounded-lg cursor-not-allowed">
                             <p class="text-red-500 text-xs mt-1 hidden" id="reset_email_error"></p>
                         </div>
 
                         <!-- Password -->
                         <div class="mb-4">
-                            <label for="reset_password" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="reset_password" class="block text-sm font-medium text-slate-300 mb-2">
                                 New Password <span class="text-red-500">*</span>
                             </label>
                             <input type="password" id="reset_password" name="password" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             
                             <!-- Password Strength Indicator -->
                             <div class="mt-2 hidden" id="reset_password_strength_container">
@@ -858,16 +954,16 @@
 
                         <!-- Password Confirmation -->
                         <div class="mb-6">
-                            <label for="reset_password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="reset_password_confirmation" class="block text-sm font-medium text-slate-300 mb-2">
                                 Confirm Password <span class="text-red-500">*</span>
                             </label>
                             <input type="password" id="reset_password_confirmation" name="password_confirmation" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                   class="w-full px-4 py-3 bg-slate-900 border border-slate-600 text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <p class="text-red-500 text-xs mt-1 hidden" id="reset_password_confirmation_error"></p>
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-lg">
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition duration-200 shadow-lg shadow-blue-500/30">
                             Reset Password
                         </button>
                     </form>
@@ -1633,5 +1729,106 @@
     <script src="{{ asset('js/face-registration.js') }}"></script>
         <!-- Face Recognition Script -->
         <script src="{{ asset('js/face-registration.js') }}"></script>
+        
+        <!-- Matrix Rain Effect -->
+        <script>
+            // Matrix Digital Rain Effect
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Matrix characters - mix of code symbols and numbers
+            const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>{}[]()';
+            const fontSize = 14;
+            const columns = canvas.width / fontSize;
+            
+            // Array to store drops - one per column
+            const drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = Math.random() * -100; // Random start positions
+            }
+
+            // Draw the Matrix rain
+            function drawMatrix() {
+                // Fade effect - creates the trail
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.05)'; // slate-950 with transparency
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Set text properties
+                ctx.font = fontSize + 'px monospace';
+                
+                // Loop through drops
+                for (let i = 0; i < drops.length; i++) {
+                    // Gradient colors - cyan to blue
+                    const gradient = ctx.createLinearGradient(0, drops[i] * fontSize, 0, (drops[i] + 1) * fontSize);
+                    gradient.addColorStop(0, '#06B6D4'); // cyan-500
+                    gradient.addColorStop(0.5, '#3B82F6'); // blue-500
+                    gradient.addColorStop(1, '#1E40AF'); // blue-700
+                    
+                    ctx.fillStyle = gradient;
+
+                    // Random character
+                    const text = characters[Math.floor(Math.random() * characters.length)];
+                    
+                    // Draw the character
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    // Reset drop to top randomly after it crosses the screen
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+
+                    // Move drop down
+                    drops[i]++;
+                }
+            }
+
+            // Animate
+            let matrixInterval = setInterval(drawMatrix, 35);
+
+            // Pause/resume when window is not visible (performance optimization)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    clearInterval(matrixInterval);
+                } else {
+                    matrixInterval = setInterval(drawMatrix, 35);
+                }
+            });
+        </script>
+        
+        <!-- Scroll Animation Script -->
+        <script>
+            // Intersection Observer for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all elements with animate-on-scroll class
+            document.addEventListener('DOMContentLoaded', () => {
+                const animatedElements = document.querySelectorAll('.animate-on-scroll');
+                animatedElements.forEach(el => observer.observe(el));
+            });
+
+            // Add smooth reveal effect on page load
+            window.addEventListener('load', () => {
+                document.body.style.opacity = '1';
+            });
+        </script>
     </body>
 </html>
