@@ -59,7 +59,12 @@ class DtrController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-        
+
+        // Block manual entry if OJT hours are fully rendered
+        if ($user->getRemainingHours() <= 0) {
+            return redirect()->back()->with('error', 'You have already completed your required OJT hours. No further DTR entries are needed.');
+        }
+
         // Validate input
         $validated = $request->validate([
             'date' => 'required|date|before_or_equal:today',
@@ -114,7 +119,12 @@ class DtrController extends Controller
     {
         $user = auth()->user();
         $today = Carbon::today();
-        
+
+        // Block time in if OJT hours are fully rendered
+        if ($user->getRemainingHours() <= 0) {
+            return redirect()->back()->with('error', 'You have already completed your required OJT hours. No further time-in is needed.');
+        }
+
         // Check if already timed in today
         $existingDtr = DtrLog::forUser($user->id)
             ->whereDate('date', $today)

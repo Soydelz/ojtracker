@@ -8,16 +8,15 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Display the login view — redirect to landing page (login is handled via modal there).
      */
-    public function create(): View
+    public function create(): RedirectResponse
     {
-        return view('auth.login');
+        return redirect('/');
     }
 
     /**

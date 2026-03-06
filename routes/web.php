@@ -7,6 +7,7 @@ use App\Http\Controllers\DtrController;
 use App\Http\Controllers\AccomplishmentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\CertificateController;
 use Illuminate\Support\Facades\Route;
 
 // Health check for Render + Neon keep-alive (UptimeRobot pings this)
@@ -82,6 +83,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+});
+
+// Certificate Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/certificate', [CertificateController::class, 'view'])->name('certificate.view');
 });
 
 require __DIR__.'/auth.php';

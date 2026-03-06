@@ -26,7 +26,7 @@
         <!-- Required Hours -->
         <div class="mt-4">
             <x-input-label for="required_hours" :value="__('Required OJT Hours')" />
-            <x-text-input id="required_hours" class="block mt-1 w-full" type="number" name="required_hours" :value="old('required_hours', 590)" required min="1" max="2000" />
+            <x-text-input id="required_hours" class="block mt-1 w-full" type="number" name="required_hours" :value="old('required_hours')" placeholder="e.g. 590" required min="1" max="2000" />
             <p class="text-xs text-gray-500 mt-1">Enter your total required OJT hours (e.g., 590, 486, 300)</p>
             <p class="text-xs text-indigo-600 mt-1" id="calculated_days"></p>
             <x-input-error :messages="$errors->get('required_hours')" class="mt-2" />

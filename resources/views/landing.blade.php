@@ -371,12 +371,12 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-3 gap-8 text-center">
                     <div class="space-y-2">
-                        <p class="text-5xl font-bold text-white">590</p>
-                        <p class="text-indigo-200 text-lg">Total Hours to Track</p>
+                        <p class="text-5xl font-bold text-white">Custom</p>
+                        <p class="text-indigo-200 text-lg">Set Your Own Required Hours</p>
                     </div>
                     <div class="space-y-2">
-                        <p class="text-5xl font-bold text-white">75</p>
-                        <p class="text-indigo-200 text-lg">Working Days</p>
+                        <p class="text-5xl font-bold text-white">Any</p>
+                        <p class="text-indigo-200 text-lg">School or Program</p>
                     </div>
                     <div class="space-y-2">
                         <p class="text-5xl font-bold text-white">100%</p>
@@ -572,9 +572,9 @@
                             <label for="register_required_hours" class="block text-sm font-medium text-gray-700 mb-2">
                                 Required OJT Hours <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" id="register_required_hours" name="required_hours" value="590" required min="1" max="2000"
+                            <input type="number" id="register_required_hours" name="required_hours" value="" placeholder="e.g. 590" required min="1" max="2000"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
-                            <p class="text-xs text-gray-500 mt-1">Enter your total required OJT hours</p>
+                            <p class="text-xs text-gray-500 mt-1">Enter your school's required OJT hours (e.g. 300, 486, 590…)</p>
                             <p class="text-xs text-indigo-600 mt-1 font-medium" id="calculated_days_modal">≈ 75 days of OJT</p>
                             <p class="text-red-500 text-xs mt-1 hidden" id="register_required_hours_error"></p>
                         </div>

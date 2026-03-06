@@ -14,6 +14,29 @@
         @endif
     </div>
 
+    {{-- Completion Banner --}}
+    @if($progressPercentage >= 100)
+    <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6 text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center space-x-5">
+            <div class="flex-shrink-0 w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                <svg class="w-9 h-9 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold">🎉 Congratulations! OJT Complete!</h3>
+                <p class="text-green-100 text-sm mt-1">You have fully rendered all your required OJT hours. Great job, {{ auth()->user()->name }}!</p>
+            </div>
+        </div>
+        <a href="{{ route('certificate.view') }}" class="flex-shrink-0 inline-flex items-center justify-center px-5 py-2.5 bg-white text-green-700 font-semibold rounded-xl shadow hover:bg-green-50 transition text-sm">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            View Certificate
+        </a>
+    </div>
+    @endif
+
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Total Rendered Hours -->
@@ -31,17 +54,25 @@
         </div>
 
         <!-- Remaining Hours -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div class="bg-white rounded-2xl shadow-lg p-6 border {{ $progressPercentage >= 100 ? 'border-green-200 bg-green-50' : 'border-gray-100' }}">
             <div class="flex items-center justify-between mb-4">
-                <div class="p-3 bg-orange-100 rounded-lg">
-                    <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                <div class="p-3 {{ $progressPercentage >= 100 ? 'bg-green-100' : 'bg-orange-100' }} rounded-lg">
+                    @if($progressPercentage >= 100)
+                        <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    @else
+                        <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    @endif
                 </div>
             </div>
             <h3 class="text-gray-500 text-sm font-medium mb-1">Remaining Hours</h3>
-            <p class="text-3xl font-bold text-gray-900">{{ number_format($remainingHours, 2) }}</p>
-            <p class="text-sm text-gray-500 mt-2">{{ $remainingDays }} days remaining</p>
+            <p class="text-3xl font-bold {{ $progressPercentage >= 100 ? 'text-green-600' : 'text-gray-900' }}">{{ number_format($remainingHours, 2) }}</p>
+            <p class="text-sm mt-2 {{ $progressPercentage >= 100 ? 'text-green-600 font-semibold' : 'text-gray-500' }}">
+                {{ $progressPercentage >= 100 ? '🎉 OJT Complete!' : $remainingDays . ' days remaining' }}
+            </p>
         </div>
 
         <!-- Progress Percentage -->
@@ -152,40 +183,53 @@
                 </div>
             @else
                 <!-- No DTR Today -->
-                <div class="text-center py-8">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <h4 class="text-lg font-semibold text-gray-900 mb-2">No Time Record Yet</h4>
-                    <p class="text-gray-500 mb-6">Click the button below to start your day</p>
-                    
-                    <form method="POST" action="{{ route('dtr.timein') }}" id="timeInForm">
-                        @csrf
-                        <div class="mb-4 flex items-center justify-center space-x-2">
-                            <label class="flex items-center cursor-pointer">
-                                <input type="checkbox" id="manualTimeIn" class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                <span class="text-sm text-gray-600">Manual time entry</span>
-                            </label>
-                        </div>
-                        <div id="manualTimeInInput" class="hidden mb-4 flex justify-center">
-                            <input type="time" name="manual_time_in" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div class="mb-4">
-                            <textarea name="notes" rows="2" placeholder="Notes (optional)" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                        </div>
-                        <input type="hidden" name="face_photo" id="timeInFacePhoto">
-                        <input type="hidden" name="face_confidence" id="timeInFaceConfidence">
-                        <button type="button" onclick="openFaceVerificationModal('timein')" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-lg">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                @if($progressPercentage >= 100)
+                    {{-- OJT Complete — hide Time In --}}
+                    <div class="text-center py-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                             </svg>
-                            Verify Face & Time In
-                        </button>
-                    </form>
-                </div>
+                        </div>
+                        <h4 class="text-lg font-semibold text-green-700 mb-2">OJT Hours Completed!</h4>
+                        <p class="text-gray-500">You have rendered all your required OJT hours.<br>No further time-in is needed.</p>
+                    </div>
+                @else
+                    <div class="text-center py-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">No Time Record Yet</h4>
+                        <p class="text-gray-500 mb-6">Click the button below to start your day</p>
+                        
+                        <form method="POST" action="{{ route('dtr.timein') }}" id="timeInForm">
+                            @csrf
+                            <div class="mb-4 flex items-center justify-center space-x-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" id="manualTimeIn" class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    <span class="text-sm text-gray-600">Manual time entry</span>
+                                </label>
+                            </div>
+                            <div id="manualTimeInInput" class="hidden mb-4 flex justify-center">
+                                <input type="time" name="manual_time_in" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div class="mb-4">
+                                <textarea name="notes" rows="2" placeholder="Notes (optional)" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                            </div>
+                            <input type="hidden" name="face_photo" id="timeInFacePhoto">
+                            <input type="hidden" name="face_confidence" id="timeInFaceConfidence">
+                            <button type="button" onclick="openFaceVerificationModal('timein')" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition duration-200 shadow-lg">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                Verify Face & Time In
+                            </button>
+                        </form>
+                    </div>
+                @endif
             @endif
         </div>
 
