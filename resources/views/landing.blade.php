@@ -259,13 +259,29 @@
         </div>
         
         <!-- Navigation Bar -->
-        <nav class="fixed w-full bg-slate-900/95 backdrop-blur-md z-50 shadow-xl border-b border-slate-700 transform -translate-y-full animate-fade-in" style="animation-delay: 0.5s;">
+        <nav class="fixed w-full bg-slate-900/10 backdrop-blur-xl z-50 border-b border-white/10 shadow-lg shadow-cyan-500/5 transform -translate-y-full animate-fade-in" style="animation-delay: 0.5s;">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
                     <!-- Logo & Brand -->
                     <a href="#top" onclick="event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'});" class="flex items-center space-x-3 cursor-pointer hover:scale-105 transition-transform duration-200 group">
                         <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="OJTracker Logo" class="h-10 sm:h-12 group-hover:drop-shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300">
                     </a>
+                    
+                    <!-- Navigation Links -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="#hero" onclick="event.preventDefault(); document.getElementById('hero').scrollIntoView({behavior: 'smooth'});" class="text-slate-300 hover:text-cyan-400 font-medium transition duration-200 text-sm">
+                            Home
+                        </a>
+                        <a href="#features" onclick="event.preventDefault(); document.getElementById('features').scrollIntoView({behavior: 'smooth'});" class="text-slate-300 hover:text-cyan-400 font-medium transition duration-200 text-sm">
+                            Features
+                        </a>
+                        <a href="#stats" onclick="event.preventDefault(); document.getElementById('stats').scrollIntoView({behavior: 'smooth'});" class="text-slate-300 hover:text-cyan-400 font-medium transition duration-200 text-sm">
+                            Stats
+                        </a>
+                        <a href="#cta" onclick="event.preventDefault(); document.getElementById('cta').scrollIntoView({behavior: 'smooth'});" class="text-slate-300 hover:text-cyan-400 font-medium transition duration-200 text-sm">
+                            Get Started
+                        </a>
+                    </div>
                     
                     <!-- Auth Links -->
                     <div class="flex items-center space-x-2 sm:space-x-4">
@@ -291,7 +307,7 @@
         </nav>
 
         <!-- Hero Section -->
-        <section class="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <section id="hero" class="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
             <!-- Matrix Rain Background -->
             <canvas id="matrixCanvas" class="absolute inset-0 z-0"></canvas>
             
@@ -348,7 +364,7 @@
         </section>
 
         <!-- Features Section -->
-        <section class="py-24 bg-slate-900">
+        <section id="features" class="py-24 bg-slate-900">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Header -->
                 <div class="text-center mb-16 animate-on-scroll">
@@ -464,7 +480,7 @@
         </section>
 
         <!-- Stats Section -->
-        <section class="py-20 bg-gradient-to-br from-blue-600 to-cyan-600 relative overflow-hidden">
+        <section id="stats" class="py-20 bg-gradient-to-br from-blue-600 to-cyan-600 relative overflow-hidden">
             <!-- Animated background circles -->
             <div class="absolute top-0 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
             <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
@@ -488,7 +504,7 @@
         </section>
 
         <!-- CTA Section -->
-        <section class="py-24 bg-slate-950">
+        <section id="cta" class="py-24 bg-slate-950">
             <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
                 <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 animate-on-scroll">
                     Ready to Start <span class="text-cyan-400">Tracking?</span>
@@ -1744,15 +1760,18 @@
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
 
-            // Matrix characters - mix of code symbols and numbers
-            const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>{}[]()';
+            // Matrix characters - Soydelz name
+            const characters = 'Soydelz';
             const fontSize = 14;
             const columns = canvas.width / fontSize;
             
             // Array to store drops - one per column
             const drops = [];
+            // Array to store character index for each column
+            const charIndex = [];
             for (let i = 0; i < columns; i++) {
                 drops[i] = Math.random() * -100; // Random start positions
+                charIndex[i] = Math.floor(Math.random() * characters.length); // Random starting letter
             }
 
             // Draw the Matrix rain
@@ -1774,11 +1793,14 @@
                     
                     ctx.fillStyle = gradient;
 
-                    // Random character
-                    const text = characters[Math.floor(Math.random() * characters.length)];
+                    // Sequential character from "Soydelz"
+                    const text = characters[charIndex[i]];
                     
                     // Draw the character
                     ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    // Move to next letter in sequence
+                    charIndex[i] = (charIndex[i] + 1) % characters.length;
 
                     // Reset drop to top randomly after it crosses the screen
                     if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
