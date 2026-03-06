@@ -7,7 +7,7 @@
         <title>OJTracker - Track Your OJT Hours Easily & Professionally</title>
         
         <!-- Favicon -->
-        <link rel="icon" type="image/png" href="{{ asset('assets/images/ojtracker_logo.png') }}">
+        <link rel="icon" type="image/png" href="{{ asset('assets/images/logov2.png') }}">
         
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -250,7 +250,7 @@
         <!-- Loading Screen -->
         <div id="loading-screen">
             <div class="loading-logo-wrap">
-                <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="Loading..." class="loading-logo">
+                <img src="{{ asset('assets/images/logov2.png') }}" alt="Loading..." class="loading-logo">
             </div>
             <div class="loading-app-name">OJTracker</div>
             <div class="loading-bar-track">
@@ -264,7 +264,7 @@
                 <div class="flex justify-between items-center h-16">
                     <!-- Logo & Brand -->
                     <a href="#top" onclick="event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'});" class="flex items-center space-x-3 cursor-pointer hover:scale-105 transition-transform duration-200 group">
-                        <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="OJTracker Logo" class="h-10 sm:h-12 group-hover:drop-shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300">
+                        <img src="{{ asset('assets/images/logov2.png') }}" alt="OJTracker Logo" class="h-10 sm:h-12 group-hover:drop-shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300">
                     </a>
                     
                     <!-- Navigation Links -->
@@ -349,14 +349,6 @@
                                     <span>Sign In</span>
                                 </button>
                             @endif
-                        </div>
-                    </div>
-                    
-                    <!-- Right Content - Floating Logo -->
-                    <div class="hidden lg:flex items-center justify-center animate-fade-in delay-300">
-                        <div class="relative">
-                            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 rounded-full blur-3xl opacity-40 animate-pulse"></div>
-                            <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="OJTracker" class="relative w-64 h-64 md:w-80 md:h-80 animate-float drop-shadow-[0_0_50px_rgba(6,182,212,0.6)]">
                         </div>
                     </div>
                 </div>
@@ -539,7 +531,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     <!-- Brand -->
                     <div class="flex items-center space-x-3">
-                        <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="OJTracker Logo" class="h-16 md:h-20">
+                        <img src="{{ asset('assets/images/logov2.png') }}" alt="OJTracker Logo" class="h-16 md:h-20">
                     </div>
                     
                     <!-- Copyright -->

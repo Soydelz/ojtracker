@@ -7,7 +7,7 @@
     <title>{{ config('app.name', 'OJTracker') }} - @yield('title', 'Dashboard')</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('assets/images/ojtracker_logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/logov2.png') }}">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -142,7 +142,7 @@
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loading-logo-wrap">
-            <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="Loading..." class="loading-logo">
+            <img src="{{ asset('assets/images/logov2.png') }}" alt="Loading..." class="loading-logo">
         </div>
         <div class="loading-app-name">OJTracker</div>
         <div class="loading-bar-track">
@@ -157,7 +157,7 @@
                 <!-- Logo -->
                 <div class="flex items-center justify-between h-16 px-6 border-b border-slate-700">
                     <div class="flex items-center space-x-2 sm:space-x-3">
-                        <img src="{{ asset('assets/images/ojtracker_logo.png') }}" alt="OJTracker" class="h-8 sm:h-10">
+                        <img src="{{ asset('assets/images/logov2.png') }}" alt="OJTracker" class="h-8 sm:h-10">
                         <span class="text-lg sm:text-xl font-bold text-white">OJTracker</span>
                     </div>
                     <button onclick="toggleSidebar()" class="lg:hidden text-slate-300 hover:bg-slate-800 p-2 rounded-lg transition">
