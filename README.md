@@ -7,6 +7,21 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## About OJTracker
+
+OJTracker is a modern OJT (On-the-Job Training) hours tracking system with Matrix-themed UI. Track your internship hours easily and professionally with features like:
+
+- Face recognition DTR (Daily Time Record)
+- Digital Matrix rain effect with glassmorphism design
+- Accomplishment tracking and documentation
+- Automated reports generation
+- Real-time notifications
+- Mobile-responsive interface
+
+Built with Laravel and powered by modern web technologies.
+
+---
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
