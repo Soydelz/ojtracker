@@ -1,2 +1,9 @@
+# OJTracker - Robots.txt
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /storage/
+
+# Sitemap
+Sitemap: https://ojtracker-q84t.onrender.com/sitemap.xml

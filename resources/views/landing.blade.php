@@ -4,7 +4,28 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        
+        <!-- SEO Meta Tags -->
         <title>OJTracker - Track Your OJT Hours Easily & Professionally</title>
+        <meta name="description" content="Track your OJT hours effortlessly with OJTracker. Modern time tracking system with face recognition DTR, accomplishment logging, and automated report generation for students and interns.">
+        <meta name="keywords" content="OJT tracker, internship hours, time tracking, DTR system, face recognition, student tracker, training hours, accomplishment tracker, OJT management">
+        <meta name="author" content="Soydelz">
+        <meta name="robots" content="index, follow">
+        <link rel="canonical" href="{{ url('/') }}">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url('/') }}">
+        <meta property="og:title" content="OJTracker - Track Your OJT Hours Easily & Professionally">
+        <meta property="og:description" content="Modern OJT time tracking system with Matrix-themed UI. Track hours, manage accomplishments, and generate reports professionally.">
+        <meta property="og:image" content="{{ asset('assets/images/logov2.png') }}">
+        
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:url" content="{{ url('/') }}">
+        <meta name="twitter:title" content="OJTracker - Track Your OJT Hours Easily & Professionally">
+        <meta name="twitter:description" content="Modern OJT time tracking system with Matrix-themed UI. Track hours, manage accomplishments, and generate reports professionally.">
+        <meta name="twitter:image" content="{{ asset('assets/images/logov2.png') }}">
         
         <!-- Favicon -->
         <link rel="icon" type="image/png" href="{{ asset('assets/images/logov2.png') }}">
@@ -19,6 +40,35 @@
         
         <!-- Face-API.js Library -->
         <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+        
+        <!-- Structured Data (JSON-LD) for SEO -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "OJTracker",
+            "description": "Modern OJT time tracking system with face recognition DTR, accomplishment logging, and automated report generation",
+            "url": "{{ url('/') }}",
+            "applicationCategory": "ProductivityApplication",
+            "operatingSystem": "Web Browser",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+            },
+            "creator": {
+                "@type": "Person",
+                "name": "Soydelz"
+            },
+            "featureList": [
+                "Face Recognition DTR",
+                "Time Tracking",
+                "Accomplishment Management",
+                "Automated Reports",
+                "Real-time Notifications"
+            ]
+        }
+        </script>
         
         <style>
             body {
