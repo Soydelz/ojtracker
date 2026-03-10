@@ -13,6 +13,9 @@
         <meta name="robots" content="index, follow">
         <link rel="canonical" href="{{ url('/') }}">
         
+        <!-- Google Search Console Verification -->
+        <meta name="google-site-verification" content="CC_lAr4vVW--7QOUJFiZXxvCTelw2x_Qpa-8CezHUB8" />
+        
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url('/') }}">
