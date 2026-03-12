@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->boolean('has_seen_tour')->default(false)->after('face_descriptor');
-        });
+        if (!Schema::hasColumn('users', 'has_seen_tour')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->boolean('has_seen_tour')->default(false);
+            });
+        }
     }
 
     /**

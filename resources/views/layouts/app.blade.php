@@ -720,12 +720,15 @@
 
     window.ojt_tour_close = function() {
         document.getElementById('ojt-tour-overlay').classList.add('hidden');
-        fetch('{{ route("tour.complete") }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' } });
+        fetch('{{ route("tour.complete") }}', { method: 'POST', credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' } })
+            .then(r => { if (!r.ok) console.error('tour.complete failed:', r.status); })
+            .catch(e => console.error('tour.complete error:', e));
     };
 
     window.ojt_tour_replay = function() {
         ojt_tour_open();
-        fetch('{{ route("tour.reset") }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' } });
+        fetch('{{ route("tour.reset") }}', { method: 'POST', credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' } })
+            .catch(e => console.error('tour.reset error:', e));
     };
 
     document.addEventListener('keydown', function(e) {
