@@ -90,4 +90,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/certificate', [CertificateController::class, 'view'])->name('certificate.view');
 });
 
+// Tour Routes
+Route::middleware('auth')->group(function () {
+    Route::post('/tour/complete', function () {
+        auth()->user()->update(['has_seen_tour' => true]);
+        return response()->json(['success' => true]);
+    })->name('tour.complete');
+    Route::post('/tour/reset', function () {
+        auth()->user()->update(['has_seen_tour' => false]);
+        return response()->json(['success' => true]);
+    })->name('tour.reset');
+});
+
 require __DIR__.'/auth.php';

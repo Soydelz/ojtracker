@@ -62,6 +62,8 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
         
+        $showTour = !$user->has_seen_tour;
+
         return view('dashboard', compact(
             'totalHours',
             'remainingHours',
@@ -72,7 +74,8 @@ class DashboardController extends Controller
             'weekHours',
             'monthDays',
             'monthHours',
-            'recentDtrs'
+            'recentDtrs',
+            'showTour'
         ));
     }
 }

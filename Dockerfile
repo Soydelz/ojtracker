@@ -66,6 +66,9 @@ php artisan config:cache || true\n\
 php artisan route:cache || true\n\
 php artisan view:cache || true\n\
 \n\
+# Run migrations (safe - only runs new ones, won'\''t touch existing data)\n\
+php artisan migrate --force || true\n\
+\n\
 # Create storage link\n\
 rm -rf /var/www/html/public/storage\n\
 php artisan storage:link || echo "Storage link exists"\n\

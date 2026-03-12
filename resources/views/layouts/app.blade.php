@@ -310,6 +310,13 @@
 
                     <!-- Right Side Actions -->
                     <div class="flex items-center space-x-2 sm:space-x-4">
+                        <!-- Tour Replay Button -->
+                        <button type="button" onclick="ojt_tour_replay()" title="Replay Tour" class="relative text-slate-300 hover:text-cyan-400 transition p-2 rounded-lg hover:bg-slate-800">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                        </button>
+
                         <!-- Notifications -->
                         <div class="relative" x-data="{ open: false, notifications: [], unreadCount: 0 }" x-init="
                             // Fetch notifications on load
@@ -632,5 +639,109 @@
             });
         }
     </script>
+
+@auth
+{{-- ===================== ONBOARDING TOUR ===================== --}}
+<div id="ojt-tour-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[999] flex items-center justify-center p-4 {{ auth()->user()->has_seen_tour ? 'hidden' : '' }}">
+    <div class="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div class="h-1 w-full bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500"></div>
+        <div class="flex items-center justify-between px-6 pt-5 pb-2">
+            <div id="tour-step-badge" class="text-xs font-bold text-cyan-400 uppercase tracking-widest"></div>
+            <button onclick="ojt_tour_close()" class="text-slate-500 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 pb-4">
+            <div id="tour-emoji" class="text-4xl mb-3"></div>
+            <h2 id="tour-title" class="text-xl font-bold text-white mb-2"></h2>
+            <p id="tour-desc" class="text-slate-400 text-sm leading-relaxed"></p>
+            <div id="tour-preview" class="mt-4 rounded-xl border border-slate-700 bg-slate-800 p-4 hidden"></div>
+        </div>
+        <div class="flex items-center justify-center gap-1.5 pb-4" id="tour-dots"></div>
+        <div class="flex items-center justify-between px-6 pb-6 gap-3">
+            <button onclick="ojt_tour_close()" class="text-sm text-slate-500 hover:text-slate-300 transition">Skip — close tour</button>
+            <div class="flex gap-2">
+                <button id="tour-back-btn" onclick="ojt_tour_prev()" class="hidden px-4 py-2 text-sm font-medium text-slate-300 border border-slate-600 rounded-lg hover:bg-slate-800 transition">← Back</button>
+                <button id="tour-next-btn" onclick="ojt_tour_next()" class="px-5 py-2 text-sm font-bold bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-lg shadow-blue-500/30">Next →</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function() {
+    const userName = @json(auth()->user()->name);
+    const requiredHours = @json(auth()->user()->required_hours ?? 590);
+    const school = @json(auth()->user()->school ?? '');
+
+    const steps = [
+        { badge: '', emoji: '👋', title: 'Hey ' + userName + ', welcome to OJTracker!', desc: 'A quick walk-through of your dashboard. Use the buttons or press ← → keys to navigate.', preview: null },
+        { badge: 'Step 1 of 5', emoji: '📊', title: 'Your three key numbers', desc: 'At a glance — your Total Rendered Hours, Remaining Hours, and Overall Progress %. These update every time you log a DTR.', preview: '<div class="grid grid-cols-3 gap-2 text-center"><div class="bg-slate-900 rounded-lg p-2 border border-slate-700"><p class="text-xs text-slate-500 mb-1">Rendered</p><p class="text-lg font-black text-green-400">0.00</p></div><div class="bg-slate-900 rounded-lg p-2 border border-slate-700"><p class="text-xs text-slate-500 mb-1">Remaining</p><p class="text-lg font-black text-orange-400">' + requiredHours + '</p></div><div class="bg-slate-900 rounded-lg p-2 border border-slate-700"><p class="text-xs text-slate-500 mb-1">Progress</p><p class="text-lg font-black text-cyan-400">0%</p></div></div>' },
+        { badge: 'Step 2 of 5', emoji: '⏱', title: 'Daily Time Record (DTR)', desc: 'Log your Time In and Time Out every day using face recognition. Your total hours are computed automatically — no manual math needed.', preview: '<div class="flex items-center justify-between bg-slate-900 rounded-lg p-3 border border-slate-700"><div><p class="text-xs text-slate-500">Time In</p><p class="text-green-400 font-bold text-sm">8:00 AM</p></div><div class="text-slate-600 text-lg">→</div><div><p class="text-xs text-slate-500">Time Out</p><p class="text-red-400 font-bold text-sm">5:00 PM</p></div><div class="bg-green-500/20 border border-green-500/30 rounded-lg px-3 py-1"><p class="text-green-400 font-bold text-sm">8h</p></div></div>' },
+        { badge: 'Step 3 of 5', emoji: '✅', title: 'Accomplishments', desc: 'Log your daily tasks and accomplishments for easy DTR logbook reference. Access it from the sidebar → Accomplishments.', preview: '<div class="space-y-2"><div class="flex items-center gap-2 bg-slate-900 rounded-lg p-2 border border-slate-700"><span class="text-green-400 text-sm">✓</span><p class="text-slate-300 text-xs">Assisted supervisor with daily office tasks</p></div><div class="flex items-center gap-2 bg-slate-900 rounded-lg p-2 border border-slate-700"><span class="text-green-400 text-sm">✓</span><p class="text-slate-300 text-xs">Prepared and submitted required documents</p></div></div>' },
+        { badge: 'Step 4 of 5', emoji: '📈', title: 'Reports & PDF Export', desc: 'Generate a full summary report of your DTR logs and export it as PDF for submission to your school or supervisor.', preview: '<div class="flex items-center gap-3 bg-slate-900 rounded-lg p-3 border border-slate-700"><div class="p-2 bg-blue-500/20 border border-blue-500/30 rounded-lg"><svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div><p class="text-white text-sm font-semibold">DTR Summary Report</p><p class="text-slate-400 text-xs">Export as PDF for submission</p></div></div>' },
+        { badge: 'Step 5 of 5', emoji: '🎓', title: 'Certificate of Completion', desc: 'Once you reach 100% of your required ' + requiredHours + ' hours, a Certificate of Completion will automatically unlock on your dashboard. Download it as an image!', preview: '<div class="flex items-center gap-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg p-3 border border-green-500/30"><div class="text-3xl">🏆</div><div><p class="text-green-400 text-sm font-bold">Certificate Unlocks at 100%</p><p class="text-slate-400 text-xs">Required: ' + requiredHours + ' hours' + (school ? ' · ' + school : '') + '</p></div></div>' },
+        { badge: 'All Done!', emoji: '🚀', title: "You're all set, " + userName + '!', desc: 'You have ' + requiredHours + ' hours to complete — start logging and watch that progress bar climb! You can replay this tour anytime by clicking the 🔄 replay icon in the top navigation bar.', preview: null },
+    ];
+
+    let current = 0;
+
+    function render() {
+        const s = steps[current];
+        document.getElementById('tour-step-badge').textContent = s.badge;
+        document.getElementById('tour-emoji').textContent = s.emoji;
+        document.getElementById('tour-title').textContent = s.title;
+        document.getElementById('tour-desc').textContent = s.desc;
+        const preview = document.getElementById('tour-preview');
+        if (s.preview) { preview.innerHTML = s.preview; preview.classList.remove('hidden'); }
+        else { preview.classList.add('hidden'); }
+        const dotsEl = document.getElementById('tour-dots');
+        dotsEl.innerHTML = '';
+        steps.forEach((_, i) => {
+            const d = document.createElement('span');
+            d.className = 'rounded-full transition-all duration-300 ' + (i === current ? 'w-5 h-2 bg-cyan-400' : 'w-2 h-2 bg-slate-600');
+            dotsEl.appendChild(d);
+        });
+        const backBtn = document.getElementById('tour-back-btn');
+        if (current === 0) backBtn.classList.add('hidden'); else backBtn.classList.remove('hidden');
+        const nextBtn = document.getElementById('tour-next-btn');
+        nextBtn.textContent = current === steps.length - 1 ? '✓ Close Tour' : 'Next →';
+    }
+
+    window.ojt_tour_next = function() { if (current < steps.length - 1) { current++; render(); } else ojt_tour_close(); };
+    window.ojt_tour_prev = function() { if (current > 0) { current--; render(); } };
+
+    window.ojt_tour_open = function() {
+        current = 0;
+        render();
+        document.getElementById('ojt-tour-overlay').classList.remove('hidden');
+    };
+
+    window.ojt_tour_close = function() {
+        document.getElementById('ojt-tour-overlay').classList.add('hidden');
+        fetch('{{ route("tour.complete") }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' } });
+    };
+
+    window.ojt_tour_replay = function() {
+        ojt_tour_open();
+        fetch('{{ route("tour.reset") }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' } });
+    };
+
+    document.addEventListener('keydown', function(e) {
+        const overlay = document.getElementById('ojt-tour-overlay');
+        if (!overlay || overlay.classList.contains('hidden')) return;
+        if (e.key === 'ArrowRight' || e.key === 'Enter') ojt_tour_next();
+        if (e.key === 'ArrowLeft') ojt_tour_prev();
+        if (e.key === 'Escape') ojt_tour_close();
+    });
+
+    // Auto-render on load if visible (new user)
+    const overlay = document.getElementById('ojt-tour-overlay');
+    if (overlay && !overlay.classList.contains('hidden')) render();
+})();
+</script>
+{{-- ===================== END TOUR ===================== --}}
+@endauth
 </body>
 </html>

@@ -28,6 +28,7 @@ class User extends Authenticatable
         'profile_picture',
         'cover_photo',
         'face_descriptor',
+        'has_seen_tour',
     ];
 
     /**
@@ -48,6 +49,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'has_seen_tour' => 'boolean',
     ];
 
     /**
